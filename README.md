@@ -13,3 +13,19 @@ used for Figures 1–3 of the manuscript.
 
 `PROVENANCE.json` records the exact original Noctua directory and checksums for
 every archived entry.
+
+## Reproducing Figure 1(a,b)
+
+The directories `Figure_1a/Reference_aug-TZVP-t1` and
+`Figure_1b/Reference_aug-TZVP-t1` contain the same 99 conventional-GW
+large-orbital-basis reference calculations used for both panels.  Xe is
+represented by `05_Xe/EXCLUDED.txt` because the required orbital basis is not
+available.  Run
+
+```console
+python3 evaluate_figure1_ab.py
+```
+
+from the repository root to parse the archived CP2K outputs, recompute all 16
+mean absolute errors in panels (a) and (b), and write
+`FIGURE_1_AB_VALUES.csv`.

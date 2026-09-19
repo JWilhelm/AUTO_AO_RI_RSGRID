@@ -1,0 +1,115 @@
+&GLOBAL
+  PRINT_LEVEL LOW
+  PROJECT gw100_t1_43_LiH
+  RUN_TYPE ENERGY
+  &TIMINGS
+    THRESHOLD 0.001
+    REPORT_MAXLOC T
+  &END TIMINGS
+&END GLOBAL
+
+&FORCE_EVAL
+  METHOD QUICKSTEP
+  &DFT
+    BASIS_SET_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/139_GW100_augTZVP_T1_N4_reference_coopfst/assets/BASIS_GTH_MOLOPT_AUG_for_excited_states
+    BASIS_SET_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/139_GW100_augTZVP_T1_N4_reference_coopfst/assets/BASIS_GTH_MOLOPT_AUG_for_excited_states_RI
+    POTENTIAL_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/139_GW100_augTZVP_T1_N4_reference_coopfst/assets/GTH_POTENTIALS
+    &MGRID
+      CUTOFF 600
+      REL_CUTOFF 60
+    &END MGRID
+    &QS
+      METHOD GPW
+      EPS_DEFAULT 1.0E-12
+      EPS_PGF_ORB 1.0E-12
+    &END QS
+    &SCF
+      ADDED_MOS -1
+      EPS_SCF 1.0E-8
+      SCF_GUESS ATOMIC
+      MAX_SCF 500
+      &DIAGONALIZATION
+        ALGORITHM STANDARD
+      &END DIAGONALIZATION
+      &MIXING
+        ALPHA 0.2
+        METHOD BROYDEN_MIXING
+        NBROYDEN 8
+      &END MIXING
+      &OUTER_SCF
+        EPS_SCF 1.0E-8
+        MAX_SCF 20
+      &END OUTER_SCF
+      &PRINT
+        &RESTART OFF
+        &END RESTART
+      &END PRINT
+    &END SCF
+    &POISSON
+      PERIODIC NONE
+      POISSON_SOLVER MULTIPOLE
+    &END POISSON
+    &XC
+      &XC_FUNCTIONAL PBE
+      &END XC_FUNCTIONAL
+      &WF_CORRELATION
+        MEMORY 6000
+        GROUP_SIZE 8
+        &INTEGRALS
+          &WFC_GPW
+            CUTOFF 600
+            REL_CUTOFF 60
+          &END WFC_GPW
+        &END INTEGRALS
+        &RI_RPA
+          RPA_NUM_QUAD_POINTS 30
+          &GW
+            SELF_CONSISTENCY G0W0
+            ANALYTIC_CONTINUATION PADE
+            CORR_MOS_OCC 10
+            CORR_MOS_VIRT 10
+            CROSSING_SEARCH NEWTON
+            FERMI_LEVEL_OFFSET 2.0E-2
+            NPARAM_PADE 16
+            RI_SIGMA_X TRUE
+          &END GW
+          &HF
+            FRACTION 1.0
+            &INTERACTION_POTENTIAL
+              POTENTIAL_TYPE TRUNCATED
+              CUTOFF_RADIUS 7.0
+            &END INTERACTION_POTENTIAL
+            &SCREENING
+              EPS_SCHWARZ 1.0E-8
+              SCREEN_ON_INITIAL_P FALSE
+            &END SCREENING
+          &END HF
+        &END RI_RPA
+      &END WF_CORRELATION
+    &END XC
+  &END DFT
+  &SUBSYS
+    &CELL
+      ABC 20 20 20
+      PERIODIC NONE
+    &END CELL
+    &COORD
+      Li 0.0000 0.0000 0.0000
+      H 0.0000 0.0000 1.5949
+    &END COORD
+    &KIND H
+      BASIS_SET aug-TZVP-MOLOPT-GTH-tier-1
+      BASIS_SET RI_AUX RI_aug-TZVP-MOLOPT-GTH-tier-1_N_RI_034_s_p_d_f_g_h_i_7_4_3_0_0_0_0_error_5.3e-07
+      POTENTIAL GTH-PBE
+    &END KIND
+    &KIND Li
+      BASIS_SET aug-TZVP-MOLOPT-GTH-tier-1
+      BASIS_SET RI_AUX RI_aug-TZVP-MOLOPT-GTH-tier-1_N_RI_115_s_p_d_f_g_h_i_7_6_6_6_2_0_0_error_4.8e-08
+      POTENTIAL GTH-PBE
+    &END KIND
+    &TOPOLOGY
+      &CENTER_COORDINATES
+      &END CENTER_COORDINATES
+    &END TOPOLOGY
+  &END SUBSYS
+&END FORCE_EVAL
