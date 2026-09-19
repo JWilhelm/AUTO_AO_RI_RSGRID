@@ -59,3 +59,5 @@ file therefore also records the six completed calculations with the largest
 tested RI-RS mesh (`RS_AO_RATIO=10`); none gives the fixed HOMO/LUMO pair
 exactly, so the provisional reference must not be interpreted as one unique
 largest-mesh calculation.
+
+## Figure 3 reproduction\n\n`Figure_3_reproduction/` contains the 100 GW100 TensorGW references, the\nSi45H56 TensorGW reference, the complete published data table, and a script\nthat recomputes all 648 Figure-3 points from the archived outputs. See its\nREADME for the exact command and the explicitly documented Si293H172\nreference limitation.
