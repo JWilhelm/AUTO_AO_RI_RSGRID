@@ -1,0 +1,104 @@
+&GLOBAL
+  PRINT_LEVEL LOW
+  PROJECT gw100_88_C6F6_t1e-4
+  RUN_TYPE ENERGY
+  &TIMINGS
+    THRESHOLD 0.001
+    REPORT_MAXLOC T
+  &END TIMINGS
+&END GLOBAL
+
+&FORCE_EVAL
+  METHOD QUICKSTEP
+  &DFT
+    BASIS_SET_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/097_GW100_GTH_augSZV_T2_grid_shift/assets/BASIS_GTH_MOLOPT_AUG_for_excited_states
+    BASIS_SET_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/097_GW100_GTH_augSZV_T2_grid_shift/assets/BASIS_GTH_MOLOPT_AUG_for_excited_states_RI
+    POTENTIAL_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/097_GW100_GTH_augSZV_T2_grid_shift/assets/GTH_POTENTIALS
+    &MGRID
+      CUTOFF 600
+      REL_CUTOFF 60
+    &END MGRID
+    &QS
+      METHOD GPW
+      EPS_DEFAULT 1.0E-12
+      EPS_PGF_ORB 1.0E-12
+    &END QS
+    &SCF
+      EPS_SCF 1.0E-8
+      SCF_GUESS ATOMIC
+      MAX_SCF 500
+      &OT
+        MINIMIZER DIIS
+        PRECONDITIONER FULL_KINETIC
+      &END OT
+      &OUTER_SCF
+        EPS_SCF 1.0E-8
+        MAX_SCF 20
+      &END OUTER_SCF
+    &END SCF
+    &POISSON
+      PERIODIC NONE
+      POISSON_SOLVER MULTIPOLE
+    &END POISSON
+    &XC
+      &XC_FUNCTIONAL PBE
+      &END XC_FUNCTIONAL
+    &END XC
+  &END DFT
+  &PROPERTIES
+    &BANDSTRUCTURE
+      &GW
+        NUM_TIME_FREQ_POINTS 30
+        EPS_FILTER 1.0E-7
+        CUTOFF_RADIUS_RI [angstrom] 7
+        REGULARIZATION_MINIMAX 1.0E-6
+        HEDIN_SHIFT F
+        &RI_RS
+          GRID_SELECT 1
+          TIKHONOV 1.0E-4
+          CUTOFF_RADIUS_RL_AO [angstrom] 8
+          N_PROCS_PER_ATOM_Z_LP -1
+          &GRID_OPTIMIZATION
+            RS_AO_RATIO 7
+            CUTOFF_ATOMIC_CLUSTER [angstrom] 3.0
+            MAX_ITER 300
+          &END GRID_OPTIMIZATION
+        &END RI_RS
+      &END GW
+    &END BANDSTRUCTURE
+  &END PROPERTIES
+  &SUBSYS
+    &CELL
+      ABC 22 22 22
+      PERIODIC NONE
+    &END CELL
+    &COORD
+      C -1.092692 -0.875775 0.000000
+      C 0.212112 -1.384183 0.000000
+      C 1.304703 -0.508408 0.000000
+      C 1.092692 0.875775 0.000000
+      C -0.212112 1.384083 0.000000
+      C -1.304804 0.508308 0.000000
+      F -2.126549 -1.704487 0.000000
+      F 0.412876 -2.693885 0.000000
+      F 2.539354 -0.989305 0.000000
+      F 2.126549 1.704487 0.000000
+      F -0.412858 2.693787 0.000000
+      F -2.539356 0.989457 0.000000
+    &END COORD
+    &KIND C
+      BASIS_SET aug-SZV-MOLOPT-GTH-tier-2
+      BASIS_SET RI_AUX RI_aug-SZV-MOLOPT-GTH-tier-2_N_RI_030_s_p_d_f_g_h_i_4_3_2_1_0_0_0_error_3.2e-05
+      POTENTIAL GTH-PBE
+    &END KIND
+    &KIND F
+      BASIS_SET aug-SZV-MOLOPT-GTH-tier-2
+      BASIS_SET RI_AUX RI_aug-SZV-MOLOPT-GTH-tier-2_N_RI_035_s_p_d_f_g_h_i_4_3_3_1_0_0_0_error_3.7e-05
+      POTENTIAL GTH-PBE
+    &END KIND
+    &TOPOLOGY
+      &CENTER_COORDINATES
+      &END CENTER_COORDINATES
+    &END TOPOLOGY
+  &END SUBSYS
+&END FORCE_EVAL
