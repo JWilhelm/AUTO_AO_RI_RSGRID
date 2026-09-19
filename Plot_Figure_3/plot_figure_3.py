@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute every numerical point in GWP41 Figure 3 from this repository.
+"""Recompute and plot all eighteen panels of Figure 3 from archived outputs.
 
 The calculation outputs and TensorGW reference outputs are parsed directly.
 GW100 statistics always use all 100 molecules.  A GW100 point fails instead
@@ -87,8 +87,7 @@ def load_published(path: Path) -> dict[tuple[str, int, int], float]:
         }
 
 
-def calculate(repo: Path) -> list[dict]:
-    support = repo / "Figure_3_reproduction"
+def calculate(repo: Path, support: Path) -> list[dict]:
     references = load_references(support / "reference_values.csv")
     published = load_published(support / "published_values.csv")
     expected_points = {
@@ -163,7 +162,7 @@ def calculate(repo: Path) -> list[dict]:
 
 def write_csv(path: Path, rows: list[dict]) -> None:
     with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -203,17 +202,16 @@ def plot(rows: list[dict], output: Path, value_column: str, title: str) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    default_repo = Path(__file__).resolve().parents[1]
-    parser.add_argument("--repo", type=Path, default=default_repo)
-    parser.add_argument("--output", type=Path, default=None)
-    parser.add_argument("--no-plot", action="store_true", help="only write CSV and JSON results")
+    support = Path(__file__).resolve().parent
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", type=Path, default=support.parent)
+    parser.add_argument("--output-dir", type=Path, default=support)
     args = parser.parse_args()
     repo = args.repo.resolve()
-    output = (args.output or repo / "Figure_3_reproduction" / "generated").resolve()
+    output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    rows = calculate(repo)
-    write_csv(output / "recomputed_values.csv", rows)
+    rows = calculate(repo, support)
+    write_csv(output / "figure_3_values.csv", rows)
     gw = [r for r in rows if r["system"] == "GW100"]
     nano = [r for r in rows if r["system"] != "GW100"]
     summary = {
@@ -228,10 +226,15 @@ def main() -> None:
         "nanocluster_max_difference_meV": max(abs(float(r["difference_meV"])) for r in nano),
         "si293h172_reference_status": "provisional_non_tensor_values_used_by_current_manuscript",
     }
-    (output / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
-    if not args.no_plot:
-        plot(rows, output / "Figure_3_recomputed.png", "plotted_recomputed_meV", "Figure 3 recomputed from archived outputs and references")
-        plot(rows, output / "Figure_3_published.png", "published_meV", "Figure 3 values used in the current manuscript")
+    (output / "reproduction_summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n"
+    )
+    plot(
+        rows,
+        output / "Figure_3.png",
+        "plotted_recomputed_meV",
+        "Figure 3 recomputed from archived outputs and references",
+    )
     print(json.dumps(summary, indent=2, sort_keys=True))
 
 

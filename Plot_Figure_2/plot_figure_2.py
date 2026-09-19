@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Recreate all numerical data and a standalone SVG for Figure 2.
+"""Recompute and plot all six panels of Figure 2 from archived CP2K outputs.
 
-The script uses only Python's standard library.  Run it from the repository
-root after cloning the complete repository.
+The script uses only Python's standard library.
 """
 
 from __future__ import annotations
@@ -330,32 +329,33 @@ def render_svg(path: Path, rows: list[dict]) -> None:
 
 
 def main() -> None:
+    support = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parent)
-    parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parent)
+    parser.add_argument("--repo", type=Path, default=support.parent)
+    parser.add_argument("--output-dir", type=Path, default=support)
     parser.add_argument(
         "--references",
         type=Path,
-        default=Path(__file__).resolve().with_name("FIGURE_2_REFERENCE_VALUES.json"),
+        default=support / "reference_values.json",
     )
     args = parser.parse_args()
     repo = args.repo.resolve(strict=True)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     references = json.loads(args.references.read_text())
     if len(references["gw100"]) != 100:
-        raise RuntimeError("FIGURE_2_REFERENCE_VALUES.json must contain 100 GW100 references")
+        raise RuntimeError("reference_values.json must contain 100 GW100 references")
     rows, validation = collect(repo, references)
-    write_csv(args.output_dir / "FIGURE_2_VALUES.csv", rows)
-    render_svg(args.output_dir / "FIGURE_2_RECREATED.svg", rows)
+    write_csv(args.output_dir / "figure_2_values.csv", rows)
+    render_svg(args.output_dir / "Figure_2.svg", rows)
     summary = {
         "reference_file": args.references.name,
-        "figure_file": "FIGURE_2_RECREATED.svg",
-        "values_file": "FIGURE_2_VALUES.csv",
+        "figure_file": "Figure_2.svg",
+        "values_file": "figure_2_values.csv",
         "display_floor_meV": 1.0,
         "validation": validation,
         "si293h172_reference_note": references["si293h172"]["note"],
     }
-    (args.output_dir / "FIGURE_2_REPRODUCTION.json").write_text(
+    (args.output_dir / "reproduction_summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n"
     )
     print(json.dumps(summary, indent=2, sort_keys=True))

@@ -1,4 +1,4 @@
-# Reproducing Figure 3
+# Plotting Figure 3
 
 This directory contains the missing reference calculations and the complete
 data path needed to recompute Figure 3 from this repository alone.
@@ -14,9 +14,9 @@ data path needed to recompute Figure 3 from this repository alone.
   provisional non-Tensor reference used in the current manuscript.
 - `published_values.csv`: the 648 numerical values plotted in the current
   manuscript, retained as the comparison target.
-- `reproduce_figure3.py`: parses every Figure-3 output and reference, requires
+- `plot_figure_3.py`: parses every Figure-3 output and reference, requires
   100/100 GW100 coverage, checks SCF total-energy consistency, recomputes all
-  points, and writes two plots plus machine-readable comparison files.
+  points, and writes the figure plus machine-readable comparison files.
 
 ## Run
 
@@ -24,10 +24,11 @@ From the repository root:
 
 ```bash
 python -m pip install matplotlib
-python Figure_3_reproduction/reproduce_figure3.py
+python Plot_Figure_3/plot_figure_3.py
 ```
 
-Results are written to `Figure_3_reproduction/generated/`.
+The outputs `Figure_3.png`, `figure_3_values.csv`, and
+`reproduction_summary.json` are written directly to `Plot_Figure_3/`.
 
 ## Reference limitation
 
