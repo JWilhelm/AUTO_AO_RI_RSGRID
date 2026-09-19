@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from collections import defaultdict
 from pathlib import Path
 import re
@@ -49,9 +50,6 @@ LABELS = {
     "auto_r5": r"$R_{RI}=5$ Å",
     "tabulated": "tabulated RI",
 }
-SI293H172_REFERENCE = {"homo_eV": -6.029, "lumo_eV": -2.657}
-
-
 def final_match(pattern: re.Pattern[str], text: str, label: str, path: Path) -> float:
     values = pattern.findall(text)
     if not values:
@@ -81,7 +79,12 @@ def load_references(repo: Path) -> dict:
     return {
         "gw100": {case_dir.name: parse_output(case_dir / "output.log") for case_dir in case_dirs},
         "si45h56": parse_output(tensor_root / "Si45H56_TensorGW" / "output.log"),
-        "si293h172": SI293H172_REFERENCE,
+        "si293h172": parse_output(
+            repo
+            / "Figure_2e"
+            / "AUTO-RI_radius-0p5_RI-AO-ratio-3"
+            / "output.log"
+        ),
     }
 
 
@@ -279,6 +282,29 @@ def plot(path: Path, rows: list[dict]) -> None:
     plt.close(fig)
 
 
+def write_csv(path: Path, rows: list[dict]) -> None:
+    fieldnames = (
+        "system",
+        "orbital",
+        "series",
+        "method",
+        "neighbor_radius_angstrom",
+        "point",
+        "x_ri_ao_ratio",
+        "valid_calculations",
+        "error_raw_meV",
+        "error_plotted_meV",
+    )
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({
+                key: format(value, ".12g") if isinstance(value, float) else value
+                for key, value in row.items()
+            })
+
+
 def main() -> None:
     support = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
@@ -289,13 +315,17 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     references = load_references(repo)
     rows, validation = collect(repo, references)
-    plot(args.output_dir / "Figure_2.png", rows)
+    csv_path = args.output_dir / "Figure_2_created.csv"
+    png_path = args.output_dir / "Figure_2_created.png"
+    write_csv(csv_path, rows)
+    plot(png_path, rows)
     print(
         f"Read {validation['valid_calculations']} valid calculations, "
         f"{validation['excluded_calculations']} exclusions, and "
         f"{validation['reference_paired_calculations']} TensorGW comparison pairs"
     )
-    print(f"Wrote {args.output_dir / 'Figure_2.png'}")
+    print(f"Wrote {csv_path}")
+    print(f"Wrote {png_path}")
 
 
 if __name__ == "__main__":

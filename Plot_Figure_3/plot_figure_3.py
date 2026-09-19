@@ -9,6 +9,7 @@ of silently dropping a missing, invalid, or state-mismatched molecule.
 from __future__ import annotations
 
 import argparse
+import csv
 import math
 import re
 from pathlib import Path
@@ -39,7 +40,6 @@ PANELS = {
     "q": ("Si293H172", 5.0, "HOMO"), "r": ("Si293H172", 5.0, "LUMO"),
 }
 COLORS = {2: "#E69F00", 3: "#0072B2", 4: "#009E73", 5: "#D55E00"}
-SI293H172_REFERENCE = {"HOMO": -6.029, "LUMO": -2.657, "energy": None}
 
 
 def parse_output(path: Path, require_rirs: bool) -> dict[str, float]:
@@ -77,24 +77,30 @@ def load_references(repo: Path) -> dict[tuple[str, str], dict[str, float | None]
     references[("Si45H56", "Si45H56")] = parse_output(
         tensor_root / "Si45H56_TensorGW" / "output.log", require_rirs=False
     )
-    references[("Si293H172", "Si293H172")] = SI293H172_REFERENCE
+    references[("Si293H172", "Si293H172")] = parse_output(
+        repo
+        / "Figure_2e"
+        / "AUTO-RI_radius-0p5_RI-AO-ratio-3"
+        / "output.log",
+        require_rirs=True,
+    )
     return references
 
 
 def calculate(repo: Path) -> list[dict]:
     references = load_references(repo)
-    expected_points = {
+    expected_points = tuple(
         f"RI-AO-ratio-{ratio}_RS-AO-ratio-{alpha}"
         for ratio in (2, 3, 4, 5) for alpha in range(2, 11)
-    }
+    )
     rows = []
     cache: dict[Path, dict[str, float]] = {}
     for letter, (system, radius, orbital) in PANELS.items():
         panel_dir = repo / f"Figure_3{letter}"
         actual_points = {p.name for p in panel_dir.iterdir() if p.is_dir()}
-        if actual_points != expected_points:
+        if actual_points != set(expected_points):
             raise RuntimeError(f"Figure_3{letter} point topology mismatch")
-        for point_name in sorted(expected_points):
+        for point_name in expected_points:
             match = POINT_RE.fullmatch(point_name)
             assert match is not None
             ratio, alpha = int(match.group(1)), int(match.group(2))
@@ -182,6 +188,32 @@ def plot(rows: list[dict], output: Path) -> None:
     plt.close(fig)
 
 
+def write_csv(path: Path, rows: list[dict]) -> None:
+    fieldnames = (
+        "panel",
+        "system",
+        "radius_angstrom",
+        "orbital",
+        "ri_ao_ratio",
+        "rs_ao_ratio",
+        "coverage",
+        "raw_error_meV",
+        "error_meV",
+        "p95_abs_error_meV",
+        "max_abs_error_meV",
+        "worst_molecule",
+        "worst_signed_error_meV",
+    )
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({
+                key: format(value, ".12g") if isinstance(value, float) else value
+                for key, value in row.items()
+            })
+
+
 def main() -> None:
     support = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
@@ -200,10 +232,14 @@ def main() -> None:
         )
     if any(row["coverage"] != "100/100" for row in gw):
         raise RuntimeError("not every GW100 point contains all 100 molecules")
-    plot(rows, output / "Figure_3.png")
+    csv_path = output / "Figure_3_created.csv"
+    png_path = output / "Figure_3_created.png"
+    write_csv(csv_path, rows)
+    plot(rows, png_path)
     print("Read 648 plotted values directly from the archived calculations")
     print("Every GW100 point contains all 100 molecules")
-    print(f"Wrote {output / 'Figure_3.png'}")
+    print(f"Wrote {csv_path}")
+    print(f"Wrote {png_path}")
 
 
 if __name__ == "__main__":

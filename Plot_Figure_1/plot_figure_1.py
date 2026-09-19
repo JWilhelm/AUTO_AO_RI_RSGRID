@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from pathlib import Path
 import re
 
@@ -232,6 +233,26 @@ def plot(path: Path, rows: list[dict[str, str | float | int]]) -> None:
     plt.close(fig)
 
 
+def write_csv(path: Path, rows: list[dict[str, str | float | int]]) -> None:
+    fieldnames = (
+        "panel",
+        "system",
+        "metric",
+        "basis",
+        "variant",
+        "sample_count",
+        "value_ev",
+    )
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({
+                key: format(value, ".12g") if isinstance(value, float) else value
+                for key, value in row.items()
+            })
+
+
 def main() -> None:
     support = Path(__file__).resolve().parent
     parser = argparse.ArgumentParser(description=__doc__)
@@ -242,9 +263,13 @@ def main() -> None:
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     rows = collect(repo)
-    plot(output / "Figure_1.png", rows)
+    csv_path = output / "Figure_1_created.csv"
+    png_path = output / "Figure_1_created.png"
+    write_csv(csv_path, rows)
+    plot(png_path, rows)
     print(f"Read {len(rows)} values from the archived calculations")
-    print(f"Wrote {output / 'Figure_1.png'}")
+    print(f"Wrote {csv_path}")
+    print(f"Wrote {png_path}")
 
 
 if __name__ == "__main__":
