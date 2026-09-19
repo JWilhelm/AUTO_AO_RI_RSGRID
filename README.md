@@ -25,5 +25,5 @@ python3 Plot_Figure_3/plot_figure_3.py
 ```
 
 Each script reads the archived calculation outputs directly and writes
-`Figure_N_created.csv` and `Figure_N_created.png` from the same calculated
-data points. Matplotlib is required.
+`Figure_N_created.csv` and `Figure_N_created.png` from the calculations.
+Matplotlib is required.
