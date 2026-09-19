@@ -29,3 +29,33 @@ python3 evaluate_figure1_ab.py
 from the repository root to parse the archived CP2K outputs, recompute all 16
 mean absolute errors in panels (a) and (b), and write
 `FIGURE_1_AB_VALUES.csv`.
+
+## Reproducing Figure 2
+
+`FIGURE_2_REFERENCE_VALUES.json` contains the 100 TensorGW reference energies
+for *GW100* and the reference values used for Si45H56 and Si293H172. Run
+
+```console
+python3 evaluate_figure2.py
+```
+
+from the repository root. The script uses only the Python standard library,
+parses all archived CP2K outputs, checks their coverage and SCF total energies,
+and writes:
+
+- `FIGURE_2_VALUES.csv`: all 146 plotted coordinates;
+- `FIGURE_2_RECREATED.svg`: the recreated six-panel figure;
+- `FIGURE_2_REPRODUCTION.json`: coverage and consistency diagnostics.
+
+The *GW100* ordinate is the mean absolute error over the available molecules;
+the two nanocrystal ordinates are absolute errors. Values below 1 meV are
+displayed at 1 meV on the logarithmic axes, while the unfloored values remain
+available in the CSV file.
+
+The Si293H172 values of -6.029 eV (HOMO) and -2.657 eV (LUMO) are the
+provisional non-Tensor reference used in the manuscript. No independent
+TensorGW or full-grid calculation is available for this system. The reference
+file therefore also records the six completed calculations with the largest
+tested RI-RS mesh (`RS_AO_RATIO=10`); none gives the fixed HOMO/LUMO pair
+exactly, so the provisional reference must not be interpreted as one unique
+largest-mesh calculation.
