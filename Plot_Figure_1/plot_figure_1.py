@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import csv
 from pathlib import Path
 import re
 
@@ -159,15 +158,6 @@ def collect(repo: Path) -> list[dict[str, str | float | int]]:
     return rows
 
 
-def write_values(path: Path, rows: list[dict[str, str | float | int]]) -> None:
-    fields = ("panel", "system", "metric", "basis", "variant", "sample_count", "value_ev")
-    with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fields, lineterminator="\n")
-        writer.writeheader()
-        for row in rows:
-            writer.writerow({**row, "value_ev": f"{float(row['value_ev']):.12f}"})
-
-
 def plot(path: Path, rows: list[dict[str, str | float | int]]) -> None:
     try:
         import matplotlib
@@ -252,9 +242,8 @@ def main() -> None:
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     rows = collect(repo)
-    write_values(output / "figure_1_values.csv", rows)
     plot(output / "Figure_1.png", rows)
-    print(f"Wrote {output / 'figure_1_values.csv'}")
+    print(f"Read {len(rows)} values from the archived calculations")
     print(f"Wrote {output / 'Figure_1.png'}")
 
 

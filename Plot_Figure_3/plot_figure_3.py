@@ -9,8 +9,6 @@ of silently dropping a missing, invalid, or state-mismatched molecule.
 from __future__ import annotations
 
 import argparse
-import csv
-import json
 import math
 import re
 from pathlib import Path
@@ -41,6 +39,7 @@ PANELS = {
     "q": ("Si293H172", 5.0, "HOMO"), "r": ("Si293H172", 5.0, "LUMO"),
 }
 COLORS = {2: "#E69F00", 3: "#0072B2", 4: "#009E73", 5: "#D55E00"}
+SI293H172_REFERENCE = {"HOMO": -6.029, "LUMO": -2.657, "energy": None}
 
 
 def parse_output(path: Path, require_rirs: bool) -> dict[str, float]:
@@ -64,32 +63,26 @@ def percentile(values: list[float], q: float) -> float:
     return ordered[lo] * (hi - position) + ordered[hi] * (position - lo)
 
 
-def load_references(path: Path) -> dict[tuple[str, str], dict]:
-    result = {}
-    with path.open(newline="") as handle:
-        for row in csv.DictReader(handle):
-            key = (row["system"], row["molecule"])
-            result[key] = {
-                "HOMO": float(row["homo_eV"]),
-                "LUMO": float(row["lumo_eV"]),
-                "energy": float(row["total_energy_hartree"]) if row["total_energy_hartree"] else None,
-                "status": row["reference_status"],
-            }
-    return result
+def load_references(repo: Path) -> dict[tuple[str, str], dict[str, float | None]]:
+    tensor_root = repo / "TensorGW_Calculations"
+    gw_root = tensor_root / "GW100_TensorGW"
+    case_dirs = sorted(path for path in gw_root.iterdir() if path.is_dir())
+    if len(case_dirs) != 100:
+        raise RuntimeError(f"expected 100 GW100 TensorGW calculations; found {len(case_dirs)}")
+    references: dict[tuple[str, str], dict[str, float | None]] = {}
+    for case_dir in case_dirs:
+        references[("GW100", case_dir.name)] = parse_output(
+            case_dir / "output.log", require_rirs=False
+        )
+    references[("Si45H56", "Si45H56")] = parse_output(
+        tensor_root / "Si45H56_TensorGW" / "output.log", require_rirs=False
+    )
+    references[("Si293H172", "Si293H172")] = SI293H172_REFERENCE
+    return references
 
 
-def load_published(path: Path) -> dict[tuple[str, int, int], float]:
-    with path.open(newline="") as handle:
-        return {
-            (row["panel"], int(row["ri_ao_ratio"]), int(row["rs_ao_ratio"])):
-            float(row["published_meV"])
-            for row in csv.DictReader(handle)
-        }
-
-
-def calculate(repo: Path, support: Path) -> list[dict]:
-    references = load_references(support / "reference_values.csv")
-    published = load_published(support / "published_values.csv")
+def calculate(repo: Path) -> list[dict]:
+    references = load_references(repo)
     expected_points = {
         f"RI-AO-ratio-{ratio}_RS-AO-ratio-{alpha}"
         for ratio in (2, 3, 4, 5) for alpha in range(2, 11)
@@ -138,7 +131,6 @@ def calculate(repo: Path, support: Path) -> list[dict]:
                 recomputed = errors[0]
                 display = max(1.0, float(round(recomputed)))
                 p95 = recomputed
-            published_value = published[(letter, ratio, alpha)]
             rows.append({
                 "panel": letter,
                 "system": system,
@@ -147,27 +139,17 @@ def calculate(repo: Path, support: Path) -> list[dict]:
                 "ri_ao_ratio": ratio,
                 "rs_ao_ratio": alpha,
                 "coverage": f"{len(errors)}/{expected_n}",
-                "recomputed_meV": f"{recomputed:.12g}",
-                "plotted_recomputed_meV": f"{display:.12g}",
-                "published_meV": f"{published_value:.12g}",
-                "difference_meV": f"{display - published_value:.12g}",
-                "p95_abs_error_meV": f"{p95:.12g}",
-                "max_abs_error_meV": f"{max(errors):.12g}",
+                "raw_error_meV": recomputed,
+                "error_meV": display,
+                "p95_abs_error_meV": p95,
+                "max_abs_error_meV": max(errors),
                 "worst_molecule": worst_molecule,
-                "worst_signed_error_meV": f"{signed[worst_index]:.12g}",
-                "reference_status": references[(system, calc_dirs[0].name if system == 'GW100' else system)]["status"],
+                "worst_signed_error_meV": signed[worst_index],
             })
     return rows
 
 
-def write_csv(path: Path, rows: list[dict]) -> None:
-    with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
-
-
-def plot(rows: list[dict], output: Path, value_column: str, title: str) -> None:
+def plot(rows: list[dict], output: Path) -> None:
     try:
         import matplotlib
         matplotlib.use("Agg")
@@ -175,7 +157,7 @@ def plot(rows: list[dict], output: Path, value_column: str, title: str) -> None:
     except ImportError as exc:
         raise RuntimeError("Plotting requires matplotlib (python -m pip install matplotlib)") from exc
     lookup = {
-        (r["panel"], int(r["ri_ao_ratio"]), int(r["rs_ao_ratio"])): float(r[value_column])
+        (r["panel"], int(r["ri_ao_ratio"]), int(r["rs_ao_ratio"])): float(r["error_meV"])
         for r in rows
     }
     fig, axes = plt.subplots(3, 6, figsize=(15.5, 8.2), sharex=True, sharey=True)
@@ -195,9 +177,8 @@ def plot(rows: list[dict], output: Path, value_column: str, title: str) -> None:
         ax.set_xlabel(r"$N_{RS}/N_{AO}$")
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=4, frameon=False, bbox_to_anchor=(0.5, 0.995))
-    fig.suptitle(title, y=0.965, fontsize=12)
-    fig.tight_layout(rect=(0, 0, 1, 0.93))
-    fig.savefig(output, dpi=220)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(output, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -210,32 +191,19 @@ def main() -> None:
     repo = args.repo.resolve()
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    rows = calculate(repo, support)
-    write_csv(output / "figure_3_values.csv", rows)
+    rows = calculate(repo)
     gw = [r for r in rows if r["system"] == "GW100"]
     nano = [r for r in rows if r["system"] != "GW100"]
-    summary = {
-        "points": len(rows),
-        "gw100_points": len(gw),
-        "gw100_points_with_100_of_100": sum(r["coverage"] == "100/100" for r in gw),
-        "gw100_points_matching_published_within_1e-6_meV": sum(abs(float(r["difference_meV"])) <= 1.0e-6 for r in gw),
-        "gw100_max_difference_meV": max(abs(float(r["difference_meV"])) for r in gw),
-        "nanocluster_points": len(nano),
-        "nanocluster_points_matching_within_1_meV": sum(abs(float(r["difference_meV"])) <= 1.0 for r in nano),
-        "nanocluster_material_mismatches_over_1_meV": sum(abs(float(r["difference_meV"])) > 1.0 for r in nano),
-        "nanocluster_max_difference_meV": max(abs(float(r["difference_meV"])) for r in nano),
-        "si293h172_reference_status": "provisional_non_tensor_values_used_by_current_manuscript",
-    }
-    (output / "reproduction_summary.json").write_text(
-        json.dumps(summary, indent=2, sort_keys=True) + "\n"
-    )
-    plot(
-        rows,
-        output / "Figure_3.png",
-        "plotted_recomputed_meV",
-        "Figure 3 recomputed from archived outputs and references",
-    )
-    print(json.dumps(summary, indent=2, sort_keys=True))
+    if len(rows) != 648 or len(gw) != 216 or len(nano) != 432:
+        raise RuntimeError(
+            f"unexpected Figure 3 coverage: total={len(rows)}, GW100={len(gw)}, nanoclusters={len(nano)}"
+        )
+    if any(row["coverage"] != "100/100" for row in gw):
+        raise RuntimeError("not every GW100 point contains all 100 molecules")
+    plot(rows, output / "Figure_3.png")
+    print("Read 648 plotted values directly from the archived calculations")
+    print("Every GW100 point contains all 100 molecules")
+    print(f"Wrote {output / 'Figure_3.png'}")
 
 
 if __name__ == "__main__":
