@@ -14,6 +14,14 @@ low-scaling GW calculations."
 - `PROVENANCE.json` records the original Noctua directory and checksums for
   every archived calculation.
 
+The Si45H56 calculations in `Figure_2c/` and `Figure_2d/` correspond to
+Figure 3(c,d) in the current manuscript. Their 24 paired calculations were
+repeated on 2026-10-01 with `EPS_FILTER 1.0E-10` using CoopFST. The archived
+inputs are the inputs actually run, including the DFT wavefunction restart
+from the Noctua source recorded in each input. The corresponding outputs,
+provenance checksums, and Figure 2 CSV/PNG were updated together. The
+TensorGW reference calculation was not repeated.
+
 ## Create the figures and data
 
 Run the scripts from the repository root:
