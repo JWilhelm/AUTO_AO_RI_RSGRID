@@ -3,7 +3,7 @@
 
 GW100 uses precisely the RS/AO=7 slice of Figure 4(c,d), with RI neighbors
 within 3 Angstrom. Silicon uses atom-local optimized RI. Incomplete tabulated
-GW100 diagnostics remain visible with explicit coverage and open markers.
+GW100 diagnostics remain visible with explicit coverage.
 """
 
 from __future__ import annotations
@@ -283,11 +283,6 @@ def plot(path: Path, rows: list[dict]) -> None:
                 color="#222222" if series == "tabulated" else "#0072B2", lw=1.6, ms=4.5,
                 label="tabulated RI" if series == "tabulated" else "optimized RI",
             )
-            incomplete = [row for row in values if row["valid_calculations"] < row["expected_calculations"]]
-            if incomplete:
-                axis.plot([row["x_ri_ao_ratio"] for row in incomplete],
-                          [row["error_plotted_meV"] for row in incomplete],
-                          linestyle="none", marker="D", color="#222222", markerfacecolor="white", ms=4.5)
         axis.set_yscale("log")
         axis.set_xlim(0.7, 5.35)
         axis.set_ylim(*limits)
@@ -301,7 +296,7 @@ def plot(path: Path, rows: list[dict]) -> None:
         axis.set_xlabel(r"$N_{RI}/N_{AO}$")
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=2, frameon=False)
-    fig.text(0.5, 0.008, "GW100: optimized 100/100 per point; open tabulated markers 91/100, 89/100, 77/100.\n"
+    fig.text(0.5, 0.008, "GW100: optimized 100/100 per point; tabulated coverage 100, 100, 100, 100, 91, 89, 77/100.\n"
              "GW100 optimized: RI neighbors 3 Å, RS/AO=7; tabulated: earlier grid setup. Silicon: atom-local RI.\n"
              "Horizontal axis: requested RI/AO for optimized bases; mean actual ratio for tabulated GW100.",
              ha="center", fontsize=9)

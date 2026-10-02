@@ -60,7 +60,7 @@ exhaustion; tabulated GW100 x values are mean actual ratios.
 At requested RI/AO=4, HOMO/LUMO MAEs are 6.46/2.39 meV; at 5 they are
 5.60/1.96 meV. All four optimized GW100 points use 100 molecule/reference pairs.
 The seven tabulated points use 100,100,100,100,91,89,77 molecules.
-The final three are explicitly incomplete GW100 diagnostics (open markers),
+The final three are explicitly incomplete GW100 diagnostics,
 and use an earlier grid setup. This comparison does not isolate RI-basis error.
 For example, BeO contributes +1089 meV to the largest tabulated LUMO point,
 about 85.2% of its absolute error sum. Small MAE does not guarantee 10-meV
