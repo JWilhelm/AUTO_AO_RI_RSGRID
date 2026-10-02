@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute and plot all 24 archived panels of current manuscript Figure 4.
+"""Recompute and plot all 30 archived panels of current manuscript Figure 4.
 
 The calculation outputs and TensorGW reference outputs are parsed directly.
 GW100 statistics always use all 100 molecules.  A GW100 point fails instead
@@ -41,6 +41,9 @@ PANELS = {
     "s": ("H24P64", 0.5, "HOMO"), "t": ("H24P64", 0.5, "LUMO"),
     "u": ("H24P64", 3.0, "HOMO"), "v": ("H24P64", 3.0, "LUMO"),
     "w": ("H24P64", 5.0, "HOMO"), "x": ("H24P64", 5.0, "LUMO"),
+    "y": ("H60P400", 0.5, "HOMO"), "z": ("H60P400", 0.5, "LUMO"),
+    "aa": ("H60P400", 3.0, "HOMO"), "ab": ("H60P400", 3.0, "LUMO"),
+    "ac": ("H60P400", 5.0, "HOMO"), "ad": ("H60P400", 5.0, "LUMO"),
 }
 COLORS = {2: "#E69F00", 3: "#0072B2", 4: "#009E73", 5: "#D55E00"}
 
@@ -88,6 +91,10 @@ def load_references(repo: Path) -> dict[tuple[str, str], dict[str, float | None]
         / "Fixed_References"
         / "Si293H172_RI-RS_reference"
         / "output.log",
+        require_rirs=True,
+    )
+    references[("H60P400", "H60P400")] = parse_output(
+        repo / "Fixed_References" / "H60P400_RI-RS_controls" / "base_e10" / "output.log",
         require_rirs=True,
     )
     return references
@@ -172,7 +179,7 @@ def plot(rows: list[dict], output: Path) -> None:
         (r["panel"], int(r["ri_ao_ratio"]), int(r["rs_ao_ratio"])): float(r["error_meV"])
         for r in rows
     }
-    fig, axes = plt.subplots(4, 6, figsize=(15.5, 10.8), sharex=True, sharey=True)
+    fig, axes = plt.subplots(5, 6, figsize=(15.5, 13.5), sharex=True, sharey=True)
     for ax, (letter, (system, radius, orbital)) in zip(axes.flat, PANELS.items()):
         for ratio in (2, 3, 4, 5):
             x = list(range(2, 11))
@@ -232,7 +239,7 @@ def main() -> None:
     rows = calculate(repo)
     gw = [r for r in rows if r["system"] == "GW100"]
     nano = [r for r in rows if r["system"] != "GW100"]
-    if len(rows) != 864 or len(gw) != 216 or len(nano) != 648:
+    if len(rows) != 1080 or len(gw) != 216 or len(nano) != 864:
         raise RuntimeError(
             f"unexpected Figure 4 coverage: total={len(rows)}, GW100={len(gw)}, nanoclusters={len(nano)}"
         )
@@ -242,7 +249,7 @@ def main() -> None:
     png_path = output / "Figure_4_created.png"
     write_csv(csv_path, rows)
     plot(rows, png_path)
-    print("Read 864 plotted values directly from the archived calculations")
+    print("Read 1080 plotted values directly from the archived calculations")
     print("Every GW100 point contains all 100 molecules")
     print(f"Wrote {csv_path}")
     print(f"Wrote {png_path}")

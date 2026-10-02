@@ -8,12 +8,13 @@ The panel directories and plot workflows below follow the current manuscript.
 ## Repository layout
 
 - `Figure_1a/`–`Figure_1f/`, `Figure_3a/`–`Figure_3f/`, and
-  `Figure_4a/`–`Figure_4x/` contain raw CP2K inputs and outputs.
+  `Figure_4a/`–`Figure_4ad/` contain raw CP2K inputs and outputs.
 - `Fixed_References/Si293H172_RI-RS_reference/` preserves the raw input and
   output that define the fixed Si293H172 HOMO/LUMO reference
   `-6.029/-2.657` eV. It is retained separately so that Figure 3(e,f) and
   Figure 4 use the same reference after their panel calculations are updated.
 - `TensorGW_Calculations/` contains additional raw reference calculations.
+- `Fixed_References/H60P400_RI-RS_controls/` preserves six valid H60P400 reference checks, one invalid frequency-grid diagnostic, and the 405 campaign metadata.
 - `Filter_Controls/H24P64_eps1e-10/` contains the 108-point H24P64
   RI-RS filter check at `EPS_FILTER 1.0E-10`.
 - `Plot_Figure_1/`, `Plot_Figure_3/`, and `Plot_Figure_4/` each contain one
@@ -40,6 +41,8 @@ use `EPS_FILTER 1.0E-12`; the 1.0E-10 runs are retained in
 CP2K build. The old 1.0E-7 inputs and outputs were removed from these
 active panels; Git history preserves them. The 0.5-Å Figure 4(g,h)
 calculations still use `EPS_FILTER 1.0E-7`.
+
+The 108 H60P400 Figure 4(y–ad) calculations use `EPS_FILTER 1.0E-10`, 30 time/frequency points, and a converged SCF wavefunction restart. The working RI/AO=4, RS/AO=7 reference at 3 Å yields HOMO/LUMO = -4.683/-2.182 eV. The RS/AO=8 control shifts them by -6/+2 meV at tighter filtering, so this reference remains provisional. See `Fixed_References/H60P400_RI-RS_controls/README.md` for the Slurm accounting exception and orbital-reordering notes.
 
 ## Create the figures and data
 
