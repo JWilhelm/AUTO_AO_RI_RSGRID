@@ -1,0 +1,995 @@
+ DBCSR| CPU Multiplication driver                                           XSMM (U)
+ DBCSR| Multrec recursion limit                                              512 (U)
+ DBCSR| Multiplication stack size                                           1000 (D)
+ DBCSR| Maximum elements for images                                    UNLIMITED (U)
+ DBCSR| Multiplicative factor virtual images                                   1 (U)
+ DBCSR| Use multiplication densification                                       T (D)
+ DBCSR| Multiplication size stacks                                             3 (U)
+ DBCSR| Use memory pool for CPU allocation                                     F (U)
+ DBCSR| Number of 3D layers                                               SINGLE (U)
+ DBCSR| Use MPI memory allocation                                              F (U)
+ DBCSR| Use RMA algorithm                                                      F (U)
+ DBCSR| Use Communication thread                                               T (U)
+ DBCSR| Communication thread load                                             30 (D)
+ DBCSR| MPI: My process id                                                     0
+ DBCSR| MPI: Number of processes                                               8
+ DBCSR| OMP: Current number of threads                                        16
+ DBCSR| OMP: Max number of threads                                            16
+ DBCSR| Split modifier for TAS multiplication algorithm                  1.0E+00 (U)
+
+
+  **** **** ******  **  PROGRAM STARTED AT               2026-09-17 10:33:20.050
+ ***** ** ***  *** **   PROGRAM STARTED ON                              n2cn0243
+ **    ****   ******    PROGRAM STARTED BY                              eprop2d1
+ ***** **    ** ** **   PROGRAM PROCESS ID                                302032
+  **** **  *******  **  PROGRAM STARTED IN /scratch/hpc-prf-metdyn/eprop2d1_Jan/
+                                           53_benchmark_RI_opt/106_GW100_GTH_RIR
+                                           S_riao5_7_c7/extensions/lebedev_riao2
+                                           /calculations/93_adenine/leb_r09
+
+ CP2K| version string:                 CP2K version 2026.2 (Development Version)
+ CP2K| source code revision number:                                      unknown
+ CP2K| cp2kflags: omp libint fftw3 libxc parallel scalapack openblas            
+ CP2K| is freely available from                            https://www.cp2k.org/
+ CP2K| Program compiled at                                   2026-09-15 17:57:52
+ CP2K| Program compiled on                                              n2login6
+ CP2K| Program compiled for                                               x86_64
+ CP2K| Data directory path    /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_
+ CP2K| Input file name        /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_
+ 
+ eprop2d1@n2cn0243 has created rank and process                      0    302032
+ eprop2d1@n2cn0243 has created rank and process                      1    302033
+ eprop2d1@n2cn0243 has created rank and process                      2    302034
+ eprop2d1@n2cn0243 has created rank and process                      3    302035
+ eprop2d1@n2cn0243 has created rank and process                      4    302036
+ eprop2d1@n2cn0243 has created rank and process                      5    302037
+ eprop2d1@n2cn0243 has created rank and process                      6    302038
+ eprop2d1@n2cn0243 has created rank and process                      7    302039
+ 
+ eprop2d1@n2cn0243 is running                                        8 processes
+
+ GLOBAL| Force Environment number                                              1
+ GLOBAL| Basis set file name            /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_
+ GLOBAL| Potential file name            /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_
+ GLOBAL| MM Potential file name                                     MM_POTENTIAL
+ GLOBAL| Coordinate file name                                      __STD_INPUT__
+ GLOBAL| Method name                                                        CP2K
+ GLOBAL| Project name                            gw100_106_93_adenine_a2_leb_r09
+ GLOBAL| Run type                                                         ENERGY
+ GLOBAL| FFT library                                                       FFTW3
+ GLOBAL| Diagonalization library                                       ScaLAPACK
+ GLOBAL| Cholesky decomposition library                                ScaLAPACK
+ GLOBAL| DGEMM library                                                      BLAS
+ GLOBAL| Direct generalized diagonalization requested                          F
+ GLOBAL| Orthonormality check for eigenvectors                          DISABLED
+ GLOBAL| Matrix multiplication library                                 ScaLAPACK
+ GLOBAL| All-to-all communication in single precision                          F
+ GLOBAL| Grid backend                                                       AUTO
+ GLOBAL| Global print level                                                  LOW
+ GLOBAL| MPI I/O enabled                                                       T
+ GLOBAL| Total number of message passing processes                             8
+ GLOBAL| Number of distributed systems (nodes)                                 1
+ GLOBAL| Number of threads for this process                                   16
+ GLOBAL| This output is from process                                           0
+ GLOBAL| OpenMP stack size per thread (OMP_STACKSIZE)                       128M
+ GLOBAL| CPU model name                          AMD EPYC 7763 64-Core Processor
+
+ MEMORY| system memory details [Kb]
+ MEMORY|                        rank 0           min           max       average
+ MEMORY| MemTotal            263897580     263897580     263897580     263897580
+ MEMORY| MemFree             251696112     251696112     251696112     251696112
+ MEMORY| Buffers                308592        308592        308592        308592
+ MEMORY| Cached                6627256       6627256       6627256       6627256
+ MEMORY| Slab                  1289836       1289836       1289836       1289836
+ MEMORY| SReclaimable           240948        240948        240948        240948
+ MEMORY| MemLikelyFree       258872908     258872908     258872908     258872908
+
+
+ GENERATE|  Preliminary Number of Bonds generated:                             0
+ GENERATE|  Achieved consistency in connectivity generation.
+
+ *******************************************************************************
+ *******************************************************************************
+ **                                                                           **
+ **     #####                         ##              ##                      **
+ **    ##   ##            ##          ##              ##                      **
+ **   ##     ##                       ##            ######                    **
+ **   ##     ##  ##   ##  ##   #####  ##  ##   ####   ##    #####    #####    **
+ **   ##     ##  ##   ##  ##  ##      ## ##   ##      ##   ##   ##  ##   ##   **
+ **   ##  ## ##  ##   ##  ##  ##      ####     ###    ##   ######   ######    **
+ **    ##  ###   ##   ##  ##  ##      ## ##      ##   ##   ##       ##        **
+ **     #######   #####   ##   #####  ##  ##  ####    ##    #####   ##        **
+ **           ##                                                    ##        **
+ **                                                                           **
+ **                                                ... make the atoms dance   **
+ **                                                                           **
+ **            Copyright (C) by CP2K developers group (2000-2026)             **
+ **                      J. Chem. Phys. 152, 194103 (2020)                    **
+ **                                                                           **
+ *******************************************************************************
+
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   3
+                             - Atoms:                                         15
+                             - Shell sets:                                    15
+                             - Shells:                                        70
+                             - Primitive Cartesian functions:                 95
+                             - Cartesian basis functions:                    170
+                             - Spherical basis functions:                    160
+
+  Maximum angular momentum of- Orbital basis functions:                        2
+                             - Local part of the GTH pseudopotential:          2
+                             - Non-local part of the GTH pseudopotential:      0
+
+
+ SCF PARAMETERS         Density guess:                                   RESTART
+                        --------------------------------------------------------
+                        max_scf:                                             500
+                        max_scf_history:                                       0
+                        max_diis:                                              4
+                        --------------------------------------------------------
+                        eps_scf:                                        1.00E-08
+                        eps_scf_history:                                0.00E+00
+                        eps_diis:                                       0.00E+00
+                        eps_eigval:                                     1.00E-05
+                        --------------------------------------------------------
+                        level_shift [a.u.]:                             0.000000
+                        --------------------------------------------------------
+                        Outer loop SCF in use 
+                        No variables optimised in outer loop
+                        eps_scf                                         1.00E-08
+                        max_scf                                               20
+                        No outer loop optimization
+                        step_size                                       5.00E-01
+
+ Extrapolation method: initial_guess
+
+ Number of electrons:                                                         50
+ Number of occupied orbitals:                                                 25
+ Number of molecular orbitals:                                                25
+
+ Number of orbital functions:                                                160
+ Number of independent orbital functions:                                    160
+
+
+ SCF WAVEFUNCTION OPTIMIZATION
+
+  ----------------------------------- OT ---------------------------------------
+  Minimizer      : DIIS                : direct inversion
+                                         in the iterative subspace
+                                         using   7 DIIS vectors
+                                         safer DIIS on
+  Preconditioner : FULL_KINETIC        : inversion of T + eS
+  Lattice FFT   : OFF
+  Precond_solver : DEFAULT
+  stepsize       :    0.15000000                  energy_gap     :    0.20000000
+  eps_taylor     :   0.10000E-15                  max_taylor     :             4
+  ----------------------------------- OT ---------------------------------------
+
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+  Decoupling Energy:                                               0.0000239509
+     1 OT DIIS     0.15E+00    1.4     0.00000003       -81.0921677700 -8.11E+01
+  Decoupling Energy:                                               0.0000239509
+     2 OT DIIS     0.15E+00    1.9     0.00000002       -81.0921677700 -3.98E-13
+  Decoupling Energy:                                               0.0000239509
+     3 OT DIIS     0.15E+00    1.9     0.00000002       -81.0921677700 -3.98E-13
+  Decoupling Energy:                                               0.0000239509
+     4 OT DIIS     0.15E+00    1.9     0.00000001       -81.0921677700 -3.27E-13
+  Decoupling Energy:                                               0.0000239509
+     5 OT DIIS     0.15E+00    1.9     9.2848E-09       -81.0921677700 -2.13E-13
+
+  *** SCF run converged in     5 steps ***
+
+
+  Electronic density on regular grids:        -50.0000000000        0.0000000000
+  Core density on regular grids:               50.0000000000       -0.0000000000
+  Total charge density on r-space grids:       -0.0000000000
+  Total charge density g-space grids:          -0.0000000000
+
+  Overlap energy of the core charge distribution:               0.00000182290249
+  Self energy of the core charge distribution:               -197.98050362690000
+  Core Hamiltonian energy:                                     60.03262002290653
+  Hartree energy:                                              79.99994594369184
+  Exchange-correlation energy:                                -23.14423193259668
+
+  Total energy:                                               -81.09216776999583
+
+  outer SCF iter =    1 RMS gradient =   0.93E-08 energy =        -81.0921677700
+  outer SCF loop converged in   1 iterations or    5 steps
+
+  
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                          BANDSTRUCTURE CALCULATION                          -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+  
+ Number of occupied molecular orbitals (MOs) = Number of occupied bands       25
+ Number of unoccupied (= virtual) MOs = Number of unoccupied bands           135
+ Number of Gaussian basis functions for MOs                                  160
+  
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                GW CALCULATION                               -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+  
+ Input: Number of time/freq. points                                           30
+ Input: ω_max for fitting Σ(iω) (eV)                                        10.0
+ Input: Filter threshold for sparse tensor operations                    1.0E-07
+ Input: Apply Hedin shift                                                      F
+ Input: Available memory per MPI process                                  2.0 GB
+ 
+ Input: RI-RS Tikhonov regularization                                   1.00E-04
+ Input: AO grid hard cutoff radius                                        8.00 Å
+ Input: MPI ranks per atom in Z_lP solve                                      -1
+ Input: Keep sparsity in χ/G/W panels                                          T
+ Input: GW flavour                                                          G0W0
+ 
+ Input: RI-RS grid optimization activated                                      T
+ Input: Initial RI-RS grid                                              CHOLESKY
+ Input: RS points per AO function                                         9.0000
+ Input: Initial RS candidates per AO function                            30.0000
+ Input: Additional Lebedev degree                                              2
+ Input: Cholesky selection matrix                                        D_PRIME
+ Input: Cholesky candidate domain                                      FULL_ATOM
+ Input: Initial radial quadrature                                       GAPW_LOG
+ Input: Cutoff radius for atomic clusters                                  5.0 Å
+ Input: Maximum grid optimization iterations                                 300
+ Input: L-BFGS history size                                                    7
+ Input: L-BFGS relative-function factor                              0.00000E+00
+ Input: L-BFGS projected-gradient tolerance                          1.00000E-09
+ 
+ Input: AUTO_RI basis optimization activated:                                  T
+ Input: AUTO_RI requested RI/AO ratio:                                       2.0
+ Input: AUTO_RI frontier orbital window:                                  5.0 eV
+ Input: AUTO_RI neighbor radius:                                           3.0 Å
+ 
+ Cutoff radius for the truncated Coulomb operator in RI metric:            7.0 Å
+ Regularization parameter of RI                                          0.0E+00
+ Regularization parameter of minimax grids                               1.0E-06
+ 
+ AUTO_RI| Number of automatic RI functions for χ, ε, W:                      320
+ AUTO_RI| Total RI basis optimization time:                                2.4 s
+  Decoupling Energy:                                               0.0000239509
+ 
+ SCF direct band gap (eV)                                                   3.84
+ Max. SCF eigval diff. (eV)                                               222.51
+ E-Range for minimax grid                                                  57.92
+ Number of Padé parameters for analytic continuation:                         16
+ 
+ RI-RS basis radii (Å):
+     Kind  Elem     r_AO (Å)     r_RI (Å)
+        1    C         8.0299        5.0785
+        2    N         8.0299        5.0785
+        3    H         9.5011        6.0090
+ 
+ RI-RS initialization: atomic kind                                             1
+ RI-RS initialization: Lebedev degree                                         11
+ RI-RS initialization: radial shells                                           8
+ RI-RS initialization: candidates per atom                                   400
+ RI-RS initialization: retained points per atom                              117
+ RI-RS initialization: atomic kind                                             2
+ RI-RS initialization: Lebedev degree                                          9
+ RI-RS initialization: radial shells                                          11
+ RI-RS initialization: candidates per atom                                   418
+ RI-RS initialization: retained points per atom                              117
+ RI-RS initialization: atomic kind                                             3
+ RI-RS initialization: Lebedev degree                                          7
+ RI-RS initialization: radial shells                                           7
+ RI-RS initialization: candidates per atom                                   182
+ RI-RS initialization: retained points per atom                               54
+ RI-RS initialization: largest cluster candidate count                      5000
+ RI-RS initialization: most pivots in one cluster                           2185
+ RI-RS initialization: most stored AO values in one cluster               791218
+ RI-RS initialization: wall time [s]                                       1.066
+ Started RI-RS grid optimization
+ RI-RS grid initial normalized error                          1.610144745098E-04
+ RI-RS grid optimization completed, execution time:                      590.6 s
+ Normalized 3C error:                                                    1.7E-08
+ Maximum absolute 3C error:                                              1.9E-03
+ Optimized points outside molecular Voronoi cells:                           351 / 1440
+ Total grid points used for RI-RS:                                          1440
+ 
+ RI-RS grid row-blocks of Φ_μ(r_l)                                            50
+ RI-RS grid points per block (max)                                            32
+ 
+ Percentage of non-zero matrix elements in Φ_μ(r_l)                     100.00 %
+ 
+ RI-RS memory estimate per MPI process:
+   Available memory per process (system)                                32.43 GB
+   Required for Z_lP (dense upper bound; actual is sparser)              0.00 GB
+   Required for χ, W, Σ panels (peak per panel step)                     0.01 GB
+   Required for Z_lP solve peak (D_local+φ, worst-case atom)             0.02 GB
+   Worst-case local-grid number of grid points:                             1440
+   Worst-case memory D_local:                                            0.02 GB
+ 
+ Started computing Z_lP
+ Computed Z_lP (MPI rank 0) for atom          1 /  2,    Execution time    0.2 s
+ Computed Z_lP (MPI rank 0) for atom          2 /  2,    Execution time    0.0 s
+ Computed Z_lP (all MPI ranks) for all atoms,            Execution time    0.3 s
+
+ Number of batches for χ, Σ matrices                                           1
+ 
+ Percentage of non-zero matrix elements in Z_lP                         100.00 %
+ Percentage of non-zero matrix elements in G_ll', χ_ll', W_ll'          100.00 %
+ Percentage of non-zero matrix elements in χ_PQ for time point 1        100.00 %
+ 
+ Computed χ(iτ,k=0) for time point            1 / 30,    Execution time    0.2 s
+ Computed χ(iτ,k=0) for time point            2 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            3 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            4 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            5 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            6 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            7 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            8 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            9 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           10 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           11 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           12 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           13 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           14 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           15 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           16 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           17 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           18 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           19 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           20 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           21 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           22 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           23 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           24 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           25 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           26 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           27 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           28 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           29 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           30 / 30,    Execution time    0.0 s
+ 
+ Computed W(iτ),                                         Execution time    0.3 s
+ 
+ Computed Σ^x(k=0),                                      Execution time    0.0 s
+ 
+ Computed Σ^c(iτ) for time point              1 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              2 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              3 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              4 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              5 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              6 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              7 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              8 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              9 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             10 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             11 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             12 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             13 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             14 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             15 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             16 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             17 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             18 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             19 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             20 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             21 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             22 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             23 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             24 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             25 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             26 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             27 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             28 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             29 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             30 / 30,    Execution time    0.0 s
+ 
+ SCF valence band maximum (eV):                                           -5.568
+ SCF conduction band minimum (eV):                                        -1.727
+ SCF indirect band gap (eV):                                               3.841
+ SCF direct band gap (eV):                                                 3.841
+ 
+ G0W0 valence band maximum (eV):                                          -7.298
+ G0W0 conduction band minimum (eV):                                        1.181
+ G0W0 indirect band gap (eV):                                              8.479
+ G0W0 direct band gap (eV):                                                8.479
+ 
+ Hartree-Fock with SCF orbitals valence band maximum (eV):                -8.178
+ Hartree-Fock with SCF orbitals conduction band minimum (eV)               2.101
+ Hartree-Fock with SCF orbitals indirect band gap (eV):                   10.279
+ Hartree-Fock with SCF orbitals direct band gap (eV):                     10.279
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree]            -81.092167769995825
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                DBCSR STATISTICS                             -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ COUNTER                                    TOTAL       BLAS       SMM       ACC
+ flops    25 x    25 x    25               156250       0.0%    100.0%      0.0%     
+ flops     6 x     6 x    25               162000       0.0%    100.0%      0.0%     
+ flops     6 x    25 x    32               288000       0.0%    100.0%      0.0%     
+ flops     6 x    25 x    38               342000       0.0%    100.0%      0.0%     
+ flops    13 x     6 x    25               585000       0.0%    100.0%      0.0%     
+ flops     6 x    13 x    25               585000       0.0%    100.0%      0.0%     
+ flops     6 x    25 x     6               630000       0.0%    100.0%      0.0%     
+ flops    25 x    25 x    32               760000       0.0%    100.0%      0.0%     
+ flops     6 x    25 x    45               810000       0.0%    100.0%      0.0%     
+ flops     6 x    25 x    25               900000       0.0%    100.0%      0.0%     
+ flops    25 x    25 x    38               902500       0.0%    100.0%      0.0%     
+ flops    13 x    25 x    32              1248000       0.0%    100.0%      0.0%     
+ flops    18 x    18 x    22              1268784       0.0%    100.0%      0.0%     
+ flops    18 x    19 x    22              1339272       0.0%    100.0%      0.0%     
+ flops    13 x    25 x    38              1482000       0.0%    100.0%      0.0%     
+ flops    18 x    23 x    22              1621224       0.0%    100.0%      0.0%     
+ flops    18 x    24 x    22              1691712       0.0%    100.0%      0.0%     
+ flops    25 x    25 x    45              2137500       0.0%    100.0%      0.0%     
+ flops    18 x    18 x    21              2599128       0.0%    100.0%      0.0%     
+ flops    13 x    25 x     6              2730000       0.0%    100.0%      0.0%     
+ flops     6 x    25 x    13              2730000       0.0%    100.0%      0.0%     
+ flops    18 x    19 x    21              2743524       0.0%    100.0%      0.0%     
+ flops    13 x    13 x    25              2788500       0.0%    100.0%      0.0%     
+ flops    18 x    21 x    22              2960496       0.0%    100.0%      0.0%     
+ flops    23 x    18 x    22              3242448       0.0%    100.0%      0.0%     
+ flops    18 x    23 x    21              3303720       0.0%    100.0%      0.0%     
+ flops    23 x    19 x    22              3422584       0.0%    100.0%      0.0%     
+ flops    18 x    24 x    21              3483648       0.0%    100.0%      0.0%     
+ flops    13 x    25 x    45              3510000       0.0%    100.0%      0.0%     
+ flops    13 x    25 x    25              3900000       0.0%    100.0%      0.0%     
+ flops    23 x    23 x    22              4143128       0.0%    100.0%      0.0%     
+ flops    18 x    20 x    22              4229280       0.0%    100.0%      0.0%     
+ flops    20 x    18 x    22              4229280       0.0%    100.0%      0.0%     
+ flops    23 x    24 x    22              4323264       0.0%    100.0%      0.0%     
+ flops    20 x    19 x    22              4464240       0.0%    100.0%      0.0%     
+ flops    22 x    18 x    20              5227200       0.0%    100.0%      0.0%     
+ flops    20 x    23 x    22              5404080       0.0%    100.0%      0.0%     
+ flops    22 x    19 x    20              5434000       0.0%    100.0%      0.0%     
+ flops    20 x    24 x    22              5639040       0.0%    100.0%      0.0%     
+ flops     6 x     6 x    22              5805360       0.0%    100.0%      0.0%     
+ flops    22 x    18 x    23              6011280       0.0%    100.0%      0.0%     
+ flops    18 x    21 x    21              6080508       0.0%    100.0%      0.0%     
+ flops    18 x    22 x    22              6202944       0.0%    100.0%      0.0%     
+ flops    22 x    19 x    23              6345240       0.0%    100.0%      0.0%     
+ flops    23 x    18 x    21              6642216       0.0%    100.0%      0.0%     
+ flops    22 x    23 x    20              6679200       0.0%    100.0%      0.0%     
+ flops    23 x    19 x    21              7011228       0.0%    100.0%      0.0%     
+ flops    23 x    21 x    22              7565712       0.0%    100.0%      0.0%     
+ flops    22 x    23 x    23              7681080       0.0%    100.0%      0.0%     
+ flops    22 x    24 x    22              8270592       0.0%    100.0%      0.0%     
+ flops    23 x    23 x    21              8442840       0.0%    100.0%      0.0%     
+ flops    18 x    20 x    21              8633520       0.0%    100.0%      0.0%     
+ flops    20 x    18 x    21              8663760       0.0%    100.0%      0.0%     
+ flops    23 x    24 x    21              8902656       0.0%    100.0%      0.0%     
+ flops    20 x    19 x    21              9145080       0.0%    100.0%      0.0%     
+ flops    20 x    21 x    22              9868320       0.0%    100.0%      0.0%     
+ flops    21 x    18 x    20              9979200       0.0%    100.0%      0.0%     
+ flops    21 x    19 x    20             10374000       0.0%    100.0%      0.0%     
+ flops    23 x    20 x    22             10808160       0.0%    100.0%      0.0%     
+ flops    20 x    23 x    21             11012400       0.0%    100.0%      0.0%     
+ flops     6 x     6 x    21             11430720       0.0%    100.0%      0.0%     
+ flops    21 x    18 x    23             11476080       0.0%    100.0%      0.0%     
+ flops    20 x    24 x    21             11612160       0.0%    100.0%      0.0%     
+ flops    13 x    25 x    13             11830000       0.0%    100.0%      0.0%     
+ flops    21 x    19 x    23             12113640       0.0%    100.0%      0.0%     
+ flops    18 x    22 x    21             12706848       0.0%    100.0%      0.0%     
+ flops    21 x    23 x    20             12751200       0.0%    100.0%      0.0%     
+ flops    18 x    18 x    32             13768704       0.0%    100.0%      0.0%     
+ flops    20 x    20 x    22             14097600       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    20             14277120       0.0%    100.0%      0.0%     
+ flops    18 x    19 x    32             14533632       0.0%    100.0%      0.0%     
+ flops    21 x    23 x    23             14663880       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    20             14968800       0.0%    100.0%      0.0%     
+ flops    23 x    21 x    21             15539076       0.0%    100.0%      0.0%     
+ flops    23 x    22 x    22             15851968       0.0%    100.0%      0.0%     
+ flops    22 x     6 x     6             15863760       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    23             16418688       0.0%    100.0%      0.0%     
+ flops    22 x    24 x    21             17031168       0.0%    100.0%      0.0%     
+ flops    22 x    20 x    20             17072000       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    23             17214120       0.0%    100.0%      0.0%     
+ flops    18 x    23 x    32             17460864       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    38             18392000       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    23             18392640       0.0%    100.0%      0.0%     
+ flops    18 x    24 x    32             18496512       0.0%    100.0%      0.0%     
+ flops    22 x    20 x    23             20037600       0.0%    100.0%      0.0%     
+ flops    20 x    21 x    21             20268360       0.0%    100.0%      0.0%     
+ flops    20 x    22 x    22             20676480       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    22             20939776       0.0%    100.0%      0.0%     
+ flops    22 x     6 x    22             21890352       0.0%    100.0%      0.0%     
+ flops    23 x    20 x    21             22063440       0.0%    100.0%      0.0%     
+ flops    22 x    18 x    22             22372416       0.0%    100.0%      0.0%     
+ flops    22 x    19 x    22             23670504       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    20             25401600       0.0%    100.0%      0.0%     
+ flops    13 x     6 x    22             25678224       0.0%    100.0%      0.0%     
+ flops     6 x    13 x    22             25887576       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    20             26484480       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    20             28047600       0.0%    100.0%      0.0%     
+ flops    22 x    23 x    22             28698296       0.0%    100.0%      0.0%     
+ flops    20 x    20 x    21             28778400       0.0%    100.0%      0.0%     
+ flops    22 x    18 x    21             28806624       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    23             30226140       0.0%    100.0%      0.0%     
+ flops    22 x    19 x    21             30424548       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    23             30457152       0.0%    100.0%      0.0%     
+ flops    21 x     6 x     6             31026240       0.0%    100.0%      0.0%     
+ flops    21 x    18 x    22             31567536       0.0%    100.0%      0.0%     
+ flops    21 x    18 x    21             32212404       0.0%    100.0%      0.0%     
+ flops    18 x    21 x    32             32344704       0.0%    100.0%      0.0%     
+ flops    23 x    22 x    21             32473056       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    64             32524800       0.0%    100.0%      0.0%     
+ flops    21 x    20 x    20             32592000       0.0%    100.0%      0.0%     
+ flops    21 x    19 x    22             33391512       0.0%    100.0%      0.0%     
+ flops    21 x    19 x    21             33968466       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    22             34151040       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    38             35112000       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    38             35112000       0.0%    100.0%      0.0%     
+ flops    23 x    18 x    32             35186688       0.0%    100.0%      0.0%     
+ flops    22 x    23 x    21             36787212       0.0%    100.0%      0.0%     
+ flops    23 x    19 x    32             37141504       0.0%    100.0%      0.0%     
+ flops    21 x    20 x    23             38253600       0.0%    100.0%      0.0%     
+ flops    21 x    23 x    22             40570068       0.0%    100.0%      0.0%     
+ flops    21 x    23 x    21             41221152       0.0%    100.0%      0.0%     
+ flops    21 x     6 x    22             41474664       0.0%    100.0%      0.0%     
+ flops    20 x    22 x    21             42356160       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    45             43560000       0.0%    100.0%      0.0%     
+ flops    22 x     6 x    21             43575840       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    86             43705200       0.0%    100.0%      0.0%     
+ flops    22 x    22 x     6             43722624       0.0%    100.0%      0.0%     
+ flops    23 x    23 x    32             44622208       0.0%    100.0%      0.0%     
+ flops    18 x    20 x    32             45780480       0.0%    100.0%      0.0%     
+ flops    20 x    18 x    32             45895680       0.0%    100.0%      0.0%     
+ flops    23 x    24 x    32             47268864       0.0%    100.0%      0.0%     
+ flops    20 x    19 x    32             48445440       0.0%    100.0%      0.0%     
+ flops    13 x     6 x    21             49700196       0.0%    100.0%      0.0%     
+ flops     6 x    13 x    21             51036804       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    20             51282000       0.0%    100.0%      0.0%     
+ flops    32 x    18 x    20             53222400       0.0%    100.0%      0.0%     
+ flops    32 x    19 x    20             55328000       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    22             56369544       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    23             57911700       0.0%    100.0%      0.0%     
+ flops    20 x    23 x    32             58202880       0.0%    100.0%      0.0%     
+ flops    32 x    18 x    23             61205760       0.0%    100.0%      0.0%     
+ flops    20 x    24 x    32             61655040       0.0%    100.0%      0.0%     
+ flops     6 x     6 x    32             61998336       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    64             62092800       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    64             62092800       0.0%    100.0%      0.0%     
+ flops    32 x    19 x    23             64606080       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    38             67032000       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    21             67331880       0.0%    100.0%      0.0%     
+ flops    18 x    22 x    32             67389696       0.0%    100.0%      0.0%     
+ flops    32 x    23 x    20             68006400       0.0%    100.0%      0.0%     
+ flops    22 x    13 x     6             71447376       0.0%    100.0%      0.0%     
+ flops    22 x     6 x    13             72113184       0.0%    100.0%      0.0%     
+ flops    22 x    20 x    22             74690880       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    21             75162276       0.0%    100.0%      0.0%     
+ flops    32 x    23 x    23             78207360       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    22             80216136       0.0%    100.0%      0.0%     
+ flops    23 x    21 x    32             82658688       0.0%    100.0%      0.0%     
+ flops    21 x     6 x    21             83068524       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    45             83160000       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    45             83160000       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    86             83437200       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    86             83437200       0.0%    100.0%      0.0%     
+ flops    22 x    21 x     6             86209200       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    85             86394000       0.0%    100.0%      0.0%     
+ flops    21 x    22 x     6             87528672       0.0%    100.0%      0.0%     
+ flops    22 x    24 x    32             90427392       0.0%    100.0%      0.0%     
+ flops    22 x    20 x    21             95948160       0.0%    100.0%      0.0%     
+ flops    22 x    13 x    22             96481528       0.0%    100.0%      0.0%     
+ flops    21 x    20 x    22            105483840       0.0%    100.0%      0.0%     
+ flops    21 x    20 x    21            107357040       0.0%    100.0%      0.0%     
+ flops    20 x    21 x    32            107815680       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    22            110803088       0.0%    100.0%      0.0%     
+ flops    13 x    13 x    22            114001316       0.0%    100.0%      0.0%     
+ flops    23 x    20 x    32            116994560       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    64            118540800       0.0%    100.0%      0.0%     
+ flops    21 x    13 x     6            139302072       0.0%    100.0%      0.0%     
+ flops    21 x     6 x    13            139924512       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    21            140710416       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    20            150159360       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    20            152409600       0.0%    100.0%      0.0%     
+ flops    20 x    20 x    32            152601600       0.0%    100.0%      0.0%     
+ flops    22 x    18 x    32            156448512       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    21            157424652       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    32            157696000       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    22            157867248       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    45            158760000       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    86            159289200       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    23            162791424       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    85            164934000       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    85            164934000       0.0%    100.0%      0.0%     
+ flops    32 x     6 x     6            165222144       0.0%    100.0%      0.0%     
+ flops    22 x    19 x    32            165247104       0.0%    100.0%      0.0%     
+ flops    32 x    18 x    22            168360192       0.0%    100.0%      0.0%     
+ flops    21 x    21 x     6            171227952       0.0%    100.0%      0.0%     
+ flops    32 x    18 x    21            171327744       0.0%    100.0%      0.0%     
+ flops    23 x    22 x    32            172218112       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    23            173416320       0.0%    100.0%      0.0%     
+ flops    32 x    20 x    20            173824000       0.0%    100.0%      0.0%     
+ flops    21 x    18 x    32            176964480       0.0%    100.0%      0.0%     
+ flops    32 x    19 x    22            177927552       0.0%    100.0%      0.0%     
+ flops    32 x    19 x    21            180973632       0.0%    100.0%      0.0%     
+ flops    21 x    13 x    22            182690508       0.0%    100.0%      0.0%     
+ flops    21 x    19 x    32            186897984       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    38            187264000       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    38            187264000       0.0%    100.0%      0.0%     
+ flops    22 x    13 x    21            193957764       0.0%    100.0%      0.0%     
+ flops    22 x    23 x    32            200035968       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    13            200060432       0.0%    100.0%      0.0%     
+ flops    32 x    20 x    23            204019200       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    22            212348928       0.0%    100.0%      0.0%     
+ flops    32 x    23 x    22            216130816       0.0%    100.0%      0.0%     
+ flops    32 x    23 x    21            219258816       0.0%    100.0%      0.0%     
+ flops    13 x    13 x    21            221805402       0.0%    100.0%      0.0%     
+ flops    20 x    22 x    32            224632320       0.0%    100.0%      0.0%     
+ flops    32 x     6 x    22            225722112       0.0%    100.0%      0.0%     
+ flops    21 x    23 x    32            226770432       0.0%    100.0%      0.0%     
+ flops    22 x     6 x    32            236273664       0.0%    100.0%      0.0%     
+ flops    13 x     6 x    32            269582976       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    20            274475520       0.0%    100.0%      0.0%     
+ flops     6 x    13 x    32            275129088       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    32            301056000       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    23            314675328       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    85            314874000       0.0%    100.0%      0.0%     
+ flops    22 x    13 x    13            325280384       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    64            331161600       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    64            331161600       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    38            357504000       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    38            357504000       0.0%    100.0%      0.0%     
+ flops    21 x    13 x    21            369400122       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    13            391158768       0.0%    100.0%      0.0%     
+ flops    22 x    21 x    32            395915520       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    13            399194796       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    21            399651840       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    22            433348608       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    45            443520000       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    45            443520000       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    86            444998400       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    86            444998400       0.0%    100.0%      0.0%     
+ flops    21 x     6 x    32            449930880       0.0%    100.0%      0.0%     
+ flops    32 x     6 x    21            449971200       0.0%    100.0%      0.0%     
+ flops    22 x    32 x     6            459022080       0.0%    100.0%      0.0%     
+ flops    32 x    22 x     6            465814272       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    32            469732032       0.0%    100.0%      0.0%     
+ flops    22 x    20 x    32            521185280       0.0%    100.0%      0.0%     
+ flops    32 x    20 x    22            562129920       0.0%    100.0%      0.0%     
+ flops    32 x    20 x    21            571173120       0.0%    100.0%      0.0%     
+ flops    21 x    20 x    32            590042880       0.0%    100.0%      0.0%     
+ flops    21 x    13 x    13            629677776       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    64            632217600       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    64            632217600       0.0%    100.0%      0.0%     
+ flops    32 x    13 x     6            741911040       0.0%    100.0%      0.0%     
+ flops    32 x     6 x    13            745145856       0.0%    100.0%      0.0%     
+ flops    22 x    22 x    32            780997888       0.0%    100.0%      0.0%     
+ flops    21 x    21 x    13            784687176       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    21            837070080       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    22            843507456       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    45            846720000       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    45            846720000       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    86            849542400       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    86            849542400       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    85            879648000       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    85            879648000       0.0%    100.0%      0.0%     
+ flops    21 x    22 x    32            894461568       0.0%    100.0%      0.0%     
+ flops    21 x    32 x     6            912062592       0.0%    100.0%      0.0%     
+ flops    32 x    21 x     6            912868992       0.0%    100.0%      0.0%     
+ flops    32 x    18 x    32            942317568       0.0%    100.0%      0.0%     
+ flops    32 x    13 x    22            993742464       0.0%    100.0%      0.0%     
+ flops    32 x    19 x    32            995018752       0.0%    100.0%      0.0%     
+ flops    22 x    13 x    32           1046952192       0.0%    100.0%      0.0%     
+ flops    13 x    13 x    32           1195633088       0.0%    100.0%      0.0%     
+ flops    32 x    23 x    32           1207982080       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    32           1605632000       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    85           1679328000       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    85           1679328000       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    38           1906688000       0.0%    100.0%      0.0%     
+ flops    21 x    13 x    32           1992419520       0.0%    100.0%      0.0%     
+ flops    32 x    13 x    21           1995878976       0.0%    100.0%      0.0%     
+ flops    22 x    32 x    13           2081036672       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    13           2125844864       0.0%    100.0%      0.0%     
+ flops    32 x     6 x    32           2437386240       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    32           2500442112       0.0%    100.0%      0.0%     
+ flops    32 x    20 x    32           3140608000       0.0%    100.0%      0.0%     
+ flops    32 x    13 x    13           3354366080       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    64           3371827200       0.0%    100.0%      0.0%     
+ flops    32 x    21 x    13           4171597248       0.0%    100.0%      0.0%     
+ flops    21 x    32 x    13           4175441088       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    45           4515840000       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    86           4530892800       0.0%    100.0%      0.0%     
+ flops    32 x    22 x    32           4761608192       0.0%    100.0%      0.0%     
+ flops    32 x    32 x     6           4860481536       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    85           8956416000       0.0%    100.0%      0.0%     
+ flops    32 x    13 x    32          10779099136       0.0%    100.0%      0.0%     
+ flops    32 x    32 x    13          22197733376       0.0%    100.0%      0.0%     
+ flops inhomo. stacks                 15194312448     100.0%      0.0%      0.0%
+ flops total                       160.162273E+09       9.5%     90.5%      0.0%
+ flops max/rank                     24.030352E+09      10.4%     89.6%      0.0%
+ matmuls inhomo. stacks                    371334     100.0%      0.0%      0.0%
+ matmuls total                            6711623       5.5%     94.5%      0.0%
+ number of processed stacks                673181       3.0%     97.0%      0.0%
+ average stack size                                    18.5       9.7       0.0
+ marketing flops                   233.170174E+09
+ -------------------------------------------------------------------------------
+ # multiplications                            561
+ max memory usage/rank              25.107141E+09
+ # max total images/rank                        2
+ # max 3D layers                                1
+ # MPI messages exchanged                   22440
+ MPI messages size (bytes):
+  total size                         6.437810E+09
+  min size                           0.000000E+00
+  max size                           2.662400E+06
+  average size                     286.889938E+03
+ MPI breakdown and total messages size (bytes):
+             size <=      128                4713                        0
+       128 < size <=     8192                 382                  2698864
+      8192 < size <=    32768                2206                 35181056
+     32768 < size <=   131072                2993                300265944
+    131072 < size <=  4194304               12146               6099663648
+   4194304 < size <= 16777216                   0                        0
+  16777216 < size                               0                        0
+ -------------------------------------------------------------------------------
+
+ *** WARNING in dbcsr_mm.F:301 :: Using a non-square number of MPI ranks ***
+ *** might lead to poor performance. Used ranks: 8 Suggested: 9 16       ***
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                      DBCSR MESSAGE PASSING PERFORMANCE                      -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ ROUTINE             CALLS      AVE VOLUME [Bytes]
+ MP_Bcast              294                     12.
+ MP_Allreduce         2969                     23.
+ MP_Alltoall          3553                  14138.
+ MP_ISend            10050                 100311.
+ MP_IRecv             9468                 100157.
+ -------------------------------------------------------------------------------
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                GRID STATISTICS                              -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ LP    KERNEL             BACKEND                              COUNT     PERCENT
+ 4     collocate ortho    CPU                                   1878      25.07%
+ 4     integrate ortho    CPU                                   1878      25.07%
+ 3     collocate ortho    CPU                                   1320      17.62%
+ 3     integrate ortho    CPU                                   1320      17.62%
+ 2     collocate ortho    CPU                                    540       7.21%
+ 2     integrate ortho    CPU                                    540       7.21%
+ 0     collocate general  CPU                                     15       0.20%
+ -------------------------------------------------------------------------------
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                          OFFLOAD MEMPOOL STATISTICS                         -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ Memory consumption                Number of allocations  Used [MiB]  Size [MiB]
+ Host                                                  6         136    21850043
+ -------------------------------------------------------------------------------
+
+ MEMORY| Estimated peak process memory [MiB]                                4225
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                         MESSAGE PASSING PERFORMANCE                         -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+
+ ROUTINE             CALLS      AVE VOLUME [Bytes]
+ MP_Group                5
+ MP_Bcast              391                 236309.
+ MP_Allreduce         1857                  10083.
+ MP_Sync                10
+ MP_Alltoall           122              191531196.
+ MP_SendRecv            84                1050624.
+ MP_ISendRecv           84                1050624.
+ MP_Wait               459
+ MP_comm_split           7
+ MP_ISend              300                5358413.
+ MP_IRecv              300                5358413.
+ -------------------------------------------------------------------------------
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                           R E F E R E N C E S                               -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ 
+ CP2K version 2026.2 (Development Version), the CP2K developers group (2026).
+ CP2K is freely available from https://www.cp2k.org/ .
+ 
+ M. Iannuzzi, J. Wilhelm, F. Stein, A. Bussy, H. Elgabarty, D. Golze, A. Hehn, 
+ M. Graml, S. Marek, B. Sertcan Gökmen, C. Schran, H. Forbert, R. Z. 
+ Khaliullin, A. Kozhevnikov, M. Taillefumier, R. Meli, V. V. Rybkin, M. Brehm, 
+ R. Schade, O. Schütt, J. V. Pototschnig, H. Mirhosseini, A. Knüpfer, D. Marx, 
+ M. Krack, J. Hutter, T. D. Kühne.
+ J. Phys. Chem. B 130, 1237-1310 (2026).
+ The CP2K Program Package Made Simple.
+ https://doi.org/10.1021/acs.jpcb.5c05851
+
+ M. Graml, K. Zollner, D. Hernangómez-Pérez, P. E. Faria Junior, J. Wilhelm.
+ J. Chem. Theory Comput. 20, 2202-2208 (2024).
+ Low-scaling GW algorithm applied to twisted transition-metal dichalcogenide 
+ heterobilayers.
+ https://doi.org/10.1021/acs.jctc.3c01230
+
+ T. D. Kühne, M. Iannuzzi, M. Del Ben, V. V. Rybkin, P. Seewald, F. Stein, T. 
+ Laino, R. Z. Khaliullin, O. Schütt, F. Schiffmann, D. Golze, J. Wilhelm, S. 
+ Chulkov, M. H. Bani-Hashemian, V. Weber, U. Borstnik, M. Taillefumier, A. S. 
+ Jakobovits, A. Lazzaro, H. Pabst, T. Müller, R. Schade, M. Guidon, S. 
+ Andermatt, N. Holmberg, G. K. Schenter, A. Hehn, A. Bussy, F. Belleflamme, G. 
+ Tabacchi, A. Glöß, M. Lass, I. Bethune, C. J. Mundy, C. Plessl, M. Watkins, 
+ J. VandeVondele, M. Krack, J. Hutter.
+ J. Chem. Phys. 152, 194103 (2020).
+ CP2K: An electronic structure and molecular dynamics software package - 
+ Quickstep: Efficient and accurate electronic structure calculations.
+ https://doi.org/10.1063/5.0007045
+
+ O. Schuett, P. Messmer, J. Hutter, J. VandeVondele.
+ Electronic Structure Calculations on Graphics Processing Units, 173-190 (2016).
+ GPU-Accelerated Sparse Matrix-Matrix Multiplication for Linear Scaling Density 
+ Functional Theory.
+ https://doi.org/10.1002/9781118670712.ch8
+
+ U. Borstnik, J. VandeVondele, V. Weber, J. Hutter.
+ Parallel Comput. 40, 47-58 (2014).
+ Sparse matrix multiplication: The distributed block-compressed sparse row 
+ library.
+ https://doi.org/10.1016/j.parco.2014.03.012
+
+ J. VandeVondele, J. Hutter.
+ J. Chem. Phys. 127, 114105 (2007).
+ Gaussian basis sets for accurate calculations on molecular systems in gas and 
+ condensed phases.
+ https://doi.org/10.1063/1.2770708
+
+ J. VandeVondele, M. Krack, F. Mohamed, M. Parrinello, T. Chassaing, J. Hutter.
+ Comput. Phys. Commun. 167, 103-128 (2005).
+ QUICKSTEP: Fast and accurate density functional calculations using a mixed 
+ Gaussian and plane waves approach.
+ https://doi.org/10.1016/j.cpc.2004.12.014
+
+ M. Krack.
+ Theor. Chem. Acc. 114, 145-152 (2005).
+ Pseudopotentials for H to Kr optimized for gradient-corrected 
+ exchange-correlation functionals.
+ https://doi.org/10.1007/s00214-005-0655-y
+
+ M. Frigo, S. G. Johnson.
+ Proc. IEEE 93, 216-231 (2005).
+ The design and implementation of FFTW3.
+ https://doi.org/10.1109/JPROC.2004.840301
+
+ J. VandeVondele, J. Hutter.
+ J. Chem. Phys. 118, 4365-4369 (2003).
+ An efficient orbital transformation method for electronic structure 
+ calculations.
+ https://doi.org/10.1063/1.1543154
+
+ C. Hartwigsen, S. Goedecker, J. Hutter.
+ Phys. Rev. B 58, 3641-3662 (1998).
+ Relativistic separable dual-space Gaussian pseudopotentials from H to Rn.
+ https://doi.org/10.1103/PhysRevB.58.3641
+
+ G. Lippert, J. Hutter, M. Parrinello.
+ Mol. Phys. 92, 477-487 (1997).
+ A hybrid Gaussian and plane wave density functional scheme.
+ https://doi.org/10.1080/002689797170220
+
+ S. Goedecker, M. Teter, J. Hutter.
+ Phys. Rev. B 54, 1703-1710 (1996).
+ Separable dual-space Gaussian pseudopotentials.
+ https://doi.org/10.1103/PhysRevB.54.1703
+
+ J. P. Perdew, K. Burke, M. Ernzerhof.
+ Phys. Rev. Lett. 77, 3865-3868 (1996).
+ Generalized gradient approximation made simple.
+ https://doi.org/10.1103/PhysRevLett.77.3865
+
+ P. E. Blöchl.
+ J. Chem. Phys. 103, 7422-7428 (1995).
+ Electrostatic decoupling of periodic images of plane‐wave‐expanded 
+ densities and derived atomic point charges.
+ https://doi.org/10.1063/1.470314
+
+ R. H. Byrd, P. H. Lu, J. Nocedal, C. Y. Zhu.
+ SIAM J. Sci. Comput. 16, 1190-1208 (1995).
+ A Limited Memory Algorithm for Bound Constrained Optimization.
+ https://doi.org/10.1137/0916069
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                T I M I N G                                  -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ SUBROUTINE                       CALLS  ASD         SELF TIME        TOTAL TIME MAXRANK
+                                MAXIMUM       AVERAGE  MAXIMUM  AVERAGE  MAXIMUM
+ CP2K                                 1  1.0    0.262    0.288  609.473  609.478       0
+ qs_energies                          1  2.0    0.006    0.006  607.962  607.962       7
+ qs_energies_properties               1  3.0    0.010    0.011  597.324  597.324       2
+ post_scf_bandstructure               1  4.0    0.001    0.001  597.314  597.323       2
+ gw                                   1  5.0    0.001    0.001  597.183  597.190       4
+ gw_calc_non_periodic_ri_rs           1  6.0    0.023    0.028  593.907  593.923       0
+ ri_rs_grid_assembler                 1  7.0    0.031    0.035  591.698  591.711       7
+ optimize_ri_rs_grid                  1  8.0    0.002    0.007  590.607  590.613       0
+ rirs_grid_LBFGS                      1  9.0    3.149    3.595  580.229  585.079       2
+ evaluate_rirs_grid_cluster         532 10.0   33.531   42.908  443.268  573.590       2
+ mp_sum_d                           801  5.2  133.819  328.562  133.819  328.562       7
+ rirs_cluster_gradient_products     532 11.0  123.134  160.559  123.134  160.559       2
+ rirs_cluster_gradient_coordina     532 11.0  105.810  128.483  105.810  128.483       2
+ rirs_cluster_AO_products           532 11.0   50.600   71.714   50.600   71.714       2
+ rirs_cluster_residual              532 11.0   50.345   64.650   50.345   64.650       2
+ rirs_cluster_D_ll                  532 11.0   43.092   57.312   43.092   57.312       2
+ rirs_cluster_d_lP                  532 11.0   36.757   47.964   36.757   47.964       2
+ rirs_grid_build_clusters             1  9.0    7.045    9.080   10.376   13.392       2
+ scf_env_do_scf                       1  3.0    0.000    0.000    9.750    9.750       6
+ scf_env_do_scf_inner_loop            5  4.0    0.000    0.001    8.319    8.322       0
+ qs_ks_build_kohn_sham_matrix         6  7.2    0.001    0.001    7.360    7.360       3
+ qs_ks_update_qs_env                  6  5.0    0.000    0.000    6.907    6.907       5
+ rebuild_ks_matrix                    5  6.0    0.000    0.001    6.906    6.906       6
+ fft_wrap_pw1pw2                     96 10.2    0.002    0.003    5.893    6.072       6
+ fft_wrap_pw1pw2_300                 60 11.7    0.320    0.322    5.677    5.863       7
+ qs_vxc_create                        6  8.2    0.000    0.000    4.579    4.583       5
+ xc_vxc_pw_create                     5  9.0    0.155    0.157    4.579    4.582       5
+ abc_contract_xsmm               145154 10.0    3.402    4.398    3.402    4.398       2
+ fft3d_ps                            96 12.2    2.471    2.509    4.137    4.316       3
+ xc_pw_derive                        30 11.0    0.000    0.000    3.344    3.523       7
+ qs_rho_update_rho_low                6  5.0    0.000    0.000    3.369    3.370       7
+ calculate_rho_elec                   6  6.0    0.130    0.130    3.369    3.370       0
+ create_and_init_bs_env_for_gw        1  6.0    0.004    0.005    3.275    3.291       0
+ generate_auto_ri_basis               1  7.0    0.000    0.000    2.436    2.436       7
+ xc_pw_divergence                     5 10.0    0.000    0.000    2.241    2.418       6
+ xc_rho_set_and_dset_create           5 10.0    0.094    0.096    2.132    2.238       3
+ density_rs2pw                        6  7.0    0.000    0.000    1.655    1.659       4
+ grid_collocate_task_list             6  7.0    1.577    1.584    1.577    1.584       0
+ init_scf_loop                        1  4.0    0.000    0.000    1.427    1.427       0
+ compute_M_pq_inv_and_V_pq            1  8.0    0.000    0.000    1.301    1.301       3
+ compute_contracted_RI_matrix         2  9.0    0.000    0.000    1.283    1.284       2
+ compute_optimized_RI_matrix_bl      30 10.0    0.045    0.050    1.177    1.280       0
+ compute_M_PQ_AB                    782 11.0    0.001    0.001    1.171    1.267       0
+ compute_M_PQ                       782 12.0    0.001    0.001    1.170    1.265       7
+ int_operators_r12_ab_os            782 13.0    0.000    0.000    1.169    1.264       7
+ int_operator_ab_os_low             782 14.0    0.487    0.524    1.168    1.263       7
+ mp_alltoall_z22v                    96 14.2    1.037    1.241    1.037    1.241       0
+ sum_up_and_integrate                 6  8.2    0.000    0.000    1.172    1.173       2
+ integrate_v_rspace                   6  9.2    0.000    0.000    1.146    1.147       3
+ potential_pw2rs                      6 10.2    0.006    0.007    1.116    1.118       7
+ build_grid_cache                     1  8.0    0.000    0.000    1.058    1.071       6
+ initialize_cholesky_rirs_grids       1  9.0    0.926    1.069    1.058    1.071       4
+ dbcsr_multiply_generic             561  9.6    0.022    0.023    0.986    1.000       1
+ yz_to_x                             46 12.7    0.303    0.308    0.788    0.977       5
+ qs_init_subsys                       1  2.0    0.001    0.001    0.970    0.971       0
+ qs_env_setup                         1  3.0    0.000    0.000    0.969    0.969       1
+ qs_env_rebuild_pw_env                2  3.5    0.000    0.000    0.968    0.969       4
+ pw_env_rebuild                       1  5.0    0.000    0.000    0.968    0.969       3
+ pw_grid_setup                        5  5.2    0.000    0.000    0.963    0.964       2
+ pw_grid_setup_internal               5  6.2    0.017    0.017    0.963    0.964       0
+ x_to_yz                             50 13.8    0.322    0.328    0.873    0.896       6
+ pw_grid_sort                         5  7.2    0.568    0.569    0.844    0.846       2
+ qs_ks_ddapc                          6  8.2    0.000    0.000    0.836    0.840       4
+ compute_AB_optimized_RI_basis        1  8.0    0.000    0.000    0.825    0.826       2
+ compute_AB_optimized_RI_basis_       1  9.0    0.000    0.000    0.770    0.824       5
+ compute_Sigma_c_and_QP_energie       1  7.0    0.001    0.001    0.801    0.812       1
+ compute_Sigma_c                      1  8.0    0.009    0.010    0.682    0.682       0
+ pw_poisson_solve                     6  8.2    0.000    0.000    0.680    0.681       4
+ init_scf_run                         1  3.0    0.000    0.000    0.641    0.641       5
+ scf_env_initial_rho_setup            1  4.0    0.000    0.000    0.641    0.641       0
+ compute_B_PQ_AB                      6 10.0    0.120    0.153    0.478    0.627       2
+ contract_grid_panels_sigma_c        30  9.0    0.001    0.001    0.609    0.610       0
+ -------------------------------------------------------------------------------
+
+ The number of warnings for this run is : 1
+ 
+ -------------------------------------------------------------------------------
+  **** **** ******  **  PROGRAM ENDED AT                 2026-09-17 10:43:37.880
+ ***** ** ***  *** **   PROGRAM RAN ON                                  n2cn0243
+ **    ****   ******    PROGRAM RAN BY                                  eprop2d1
+ ***** **    ** ** **   PROGRAM PROCESS ID                                302032
+  **** **  *******  **  PROGRAM STOPPED IN /scratch/hpc-prf-metdyn/eprop2d1_Jan/
+                                           53_benchmark_RI_opt/106_GW100_GTH_RIR
+                                           S_riao5_7_c7/extensions/lebedev_riao2
+                                           /calculations/93_adenine/leb_r09

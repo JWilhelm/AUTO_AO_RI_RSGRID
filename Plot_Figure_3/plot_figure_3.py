@@ -1,214 +1,299 @@
 #!/usr/bin/env python3
-"""Recompute and plot all 24 archived panels of current manuscript Figure 4.
-
-The calculation outputs and TensorGW reference outputs are parsed directly.
-GW100 statistics always use all 100 molecules.  A GW100 point fails instead
-of silently dropping a missing, invalid, or state-mismatched molecule.
-"""
+"""Recompute and plot all six panels of Figure 3 from archived CP2K outputs."""
 
 from __future__ import annotations
 
 import argparse
 import csv
-import math
-import re
+from collections import defaultdict
 from pathlib import Path
+import re
+import statistics
 
 
 HOMO_RE = re.compile(r"G0W0 valence band maximum \(eV\):\s+([-+0-9.Ee]+)")
 LUMO_RE = re.compile(r"G0W0 conduction band minimum \(eV\):\s+([-+0-9.Ee]+)")
 ENERGY_RE = re.compile(
-    r"ENERGY\|\s+Total FORCE_EVAL .*?energy \[(?:a\.u\.|hartree)\]\s+([-+0-9.Ee]+)",
-    re.I,
+    r"ENERGY\|\s+Total FORCE_EVAL \( QS \) energy \[(?:a\.u\.|hartree)\]\s+([-+0-9.Ee]+)"
 )
+AO_RE = re.compile(r"^\s*Number of Gaussian basis functions for MOs\s+(\d+)\s*$", re.MULTILINE)
+RI_RE = re.compile(
+    r"^\s*(?:Number of auxiliary Gaussian basis functions for .+?|"
+    r"AUTO_RI\| Number of automatic RI functions for .+?:)\s+(\d+)\s*$",
+    re.MULTILINE,
+)
+NORMAL_RE = re.compile(r"PROGRAM ENDED AT")
 FATAL_RE = re.compile(
-    r"MPI_ABORT|SIGSEGV|Segmentation fault|Abnormal program termination|"
-    r"CPASSERT|ASSERTION FAILED|out of memory|oom-kill",
-    re.I,
+    r"\[(?:ABORT|ASSERT)\]|CPASSERT|MPI_ABORT|SIGSEGV|segmentation fault|"
+    r"out of memory|oom.kill|Killed process|Cannot allocate memory",
+    re.IGNORECASE,
 )
-POINT_RE = re.compile(r"RI-AO-ratio-([2345])_RS-AO-ratio-(\d+)$")
+AUTO_RE = re.compile(r"AUTO-RI_radius-(0p5|3|5)_RI-AO-ratio-(1|1p5|2|3|4|5)$")
+TAB_RE = re.compile(r"Tabulated_t1e-(\d+)$")
 
-PANELS = {
-    "a": ("GW100", 0.5, "HOMO"), "b": ("GW100", 0.5, "LUMO"),
-    "c": ("GW100", 3.0, "HOMO"), "d": ("GW100", 3.0, "LUMO"),
-    "e": ("GW100", 5.0, "HOMO"), "f": ("GW100", 5.0, "LUMO"),
-    "g": ("Si45H56", 0.5, "HOMO"), "h": ("Si45H56", 0.5, "LUMO"),
-    "i": ("Si45H56", 3.0, "HOMO"), "j": ("Si45H56", 3.0, "LUMO"),
-    "k": ("Si45H56", 5.0, "HOMO"), "l": ("Si45H56", 5.0, "LUMO"),
-    "m": ("Si293H172", 0.5, "HOMO"), "n": ("Si293H172", 0.5, "LUMO"),
-    "o": ("Si293H172", 3.0, "HOMO"), "p": ("Si293H172", 3.0, "LUMO"),
-    "q": ("Si293H172", 5.0, "HOMO"), "r": ("Si293H172", 5.0, "LUMO"),
-    "s": ("H24P64", 0.5, "HOMO"), "t": ("H24P64", 0.5, "LUMO"),
-    "u": ("H24P64", 3.0, "HOMO"), "v": ("H24P64", 3.0, "LUMO"),
-    "w": ("H24P64", 5.0, "HOMO"), "x": ("H24P64", 5.0, "LUMO"),
+SYSTEMS = (
+    ("GW100", "Figure_3a"),
+    ("Si45H56", "Figure_3c"),
+    ("Si293H172", "Figure_3e"),
+)
+RADII = {"0p5": 0.5, "3": 3.0, "5": 5.0}
+SERIES = ("auto_r0.5", "auto_r3", "auto_r5", "tabulated")
+COLORS = {
+    "auto_r0.5": "#0072B2",
+    "auto_r3": "#E69F00",
+    "auto_r5": "#009E73",
+    "tabulated": "#222222",
 }
-COLORS = {2: "#E69F00", 3: "#0072B2", 4: "#009E73", 5: "#D55E00"}
+LABELS = {
+    "auto_r0.5": r"$R_{RI}=0.5$ Å",
+    "auto_r3": r"$R_{RI}=3$ Å",
+    "auto_r5": r"$R_{RI}=5$ Å",
+    "tabulated": "tabulated RI",
+}
+def final_match(pattern: re.Pattern[str], text: str, label: str, path: Path) -> float:
+    values = pattern.findall(text)
+    if not values:
+        raise RuntimeError(f"Missing {label} in {path}")
+    return float(values[-1])
 
 
-def parse_output(path: Path, require_rirs: bool) -> dict[str, float]:
+def parse_output(path: Path) -> dict[str, float | int]:
     text = path.read_text(errors="replace")
-    if "PROGRAM ENDED AT" not in text or FATAL_RE.search(text):
-        raise RuntimeError(f"invalid or incomplete output: {path}")
-    if require_rirs and "RI-RS grid optimization completed" not in text:
-        raise RuntimeError(f"RI-RS optimization did not complete: {path}")
-    homo, lumo, energy = HOMO_RE.findall(text), LUMO_RE.findall(text), ENERGY_RE.findall(text)
-    if not homo or not lumo or not energy:
-        raise RuntimeError(f"missing HOMO, LUMO, or total energy: {path}")
-    return {"HOMO": float(homo[-1]), "LUMO": float(lumo[-1]), "energy": float(energy[-1])}
+    if not NORMAL_RE.search(text) or FATAL_RE.search(text):
+        raise RuntimeError(f"Invalid or incomplete CP2K output: {path}")
+    return {
+        "homo_eV": final_match(HOMO_RE, text, "G0W0 HOMO", path),
+        "lumo_eV": final_match(LUMO_RE, text, "G0W0 LUMO", path),
+        "total_energy_hartree": final_match(ENERGY_RE, text, "total energy", path),
+        "n_ao": int(final_match(AO_RE, text, "AO count", path)),
+        "n_ri": int(final_match(RI_RE, text, "RI count", path)),
+    }
 
 
-def percentile(values: list[float], q: float) -> float:
-    ordered = sorted(values)
-    position = (len(ordered) - 1) * q
-    lo, hi = math.floor(position), math.ceil(position)
-    if lo == hi:
-        return ordered[lo]
-    return ordered[lo] * (hi - position) + ordered[hi] * (position - lo)
-
-
-def load_references(repo: Path) -> dict[tuple[str, str], dict[str, float | None]]:
+def load_references(repo: Path) -> dict:
     tensor_root = repo / "TensorGW_Calculations"
     gw_root = tensor_root / "GW100_TensorGW"
     case_dirs = sorted(path for path in gw_root.iterdir() if path.is_dir())
     if len(case_dirs) != 100:
-        raise RuntimeError(f"expected 100 GW100 TensorGW calculations; found {len(case_dirs)}")
-    references: dict[tuple[str, str], dict[str, float | None]] = {}
-    for case_dir in case_dirs:
-        references[("GW100", case_dir.name)] = parse_output(
-            case_dir / "output.log", require_rirs=False
-        )
-    references[("Si45H56", "Si45H56")] = parse_output(
-        tensor_root / "Si45H56_TensorGW" / "output.log", require_rirs=False
-    )
-    references[("H24P64", "H24P64")] = parse_output(
-        tensor_root / "H24P64_TensorGW" / "output.log", require_rirs=False
-    )
-    references[("Si293H172", "Si293H172")] = parse_output(
-        repo
-        / "Figure_2e"
-        / "AUTO-RI_radius-0p5_RI-AO-ratio-3"
-        / "output.log",
-        require_rirs=True,
-    )
-    return references
+        raise RuntimeError(f"Expected 100 GW100 TensorGW calculations; found {len(case_dirs)}")
+    return {
+        "gw100": {case_dir.name: parse_output(case_dir / "output.log") for case_dir in case_dirs},
+        "si45h56": parse_output(tensor_root / "Si45H56_TensorGW" / "output.log"),
+        "si293h172": parse_output(
+            repo
+            / "Fixed_References"
+            / "Si293H172_RI-RS_reference"
+            / "output.log"
+        ),
+    }
 
 
-def calculate(repo: Path) -> list[dict]:
-    references = load_references(repo)
-    expected_points = tuple(
-        f"RI-AO-ratio-{ratio}_RS-AO-ratio-{alpha}"
-        for ratio in (2, 3, 4, 5) for alpha in range(2, 11)
-    )
-    rows = []
-    cache: dict[Path, dict[str, float]] = {}
-    for letter, (system, radius, orbital) in PANELS.items():
-        panel_dir = repo / f"Figure_3{letter}"
-        actual_points = {p.name for p in panel_dir.iterdir() if p.is_dir()}
-        if actual_points != set(expected_points):
-            raise RuntimeError(f"Figure_3{letter} point topology mismatch")
-        for point_name in expected_points:
-            match = POINT_RE.fullmatch(point_name)
-            assert match is not None
-            ratio, alpha = int(match.group(1)), int(match.group(2))
-            point_dir = panel_dir / point_name
-            calc_dirs = sorted(p for p in point_dir.iterdir() if p.is_dir()) if system == "GW100" else [point_dir]
-            expected_n = 100 if system == "GW100" else 1
-            if len(calc_dirs) != expected_n:
-                raise RuntimeError(f"Figure_3{letter}/{point_name}: {len(calc_dirs)}/{expected_n} outputs")
-            errors, signed = [], []
-            worst_molecule = ""
-            for calc_dir in calc_dirs:
-                output = calc_dir / "output.log"
-                if output not in cache:
-                    cache[output] = parse_output(output, require_rirs=True)
-                value = cache[output]
-                molecule = calc_dir.name if system == "GW100" else system
-                reference = references[(system, molecule)]
-                if reference["energy"] is not None and abs(value["energy"] - reference["energy"]) > 1.0e-6:
-                    raise RuntimeError(
-                        f"SCF state mismatch: {output} differs from its reference by "
-                        f"{value['energy'] - reference['energy']:.3e} hartree"
-                    )
-                delta = (value[orbital] - reference[orbital]) * 1000.0
-                signed.append(delta)
-                errors.append(abs(delta))
-            worst_index = max(range(len(errors)), key=errors.__getitem__)
+def point_metadata(name: str) -> dict[str, str | float]:
+    match = AUTO_RE.fullmatch(name)
+    if match:
+        radius = RADII[match.group(1)]
+        return {
+            "method": "AUTO_RI",
+            "series": f"auto_r{radius:g}",
+            "neighbor_radius_angstrom": radius,
+            "requested_ri_ao_ratio": float(match.group(2).replace("p", ".")),
+            "tabulated_threshold": "",
+        }
+    match = TAB_RE.fullmatch(name)
+    if match:
+        return {
+            "method": "tabulated_RI",
+            "series": "tabulated",
+            "neighbor_radius_angstrom": "",
+            "requested_ri_ao_ratio": "",
+            "tabulated_threshold": f"1e-{match.group(1)}",
+        }
+    raise RuntimeError(f"Unexpected Figure 3 point directory: {name}")
+
+
+def reference_for(references: dict, system: str, case: str) -> dict:
+    if system == "GW100":
+        return references["gw100"][case]
+    if system == "Si45H56":
+        return references["si45h56"]
+    return references["si293h172"]
+
+
+def collect(repo: Path, references: dict) -> tuple[list[dict], dict]:
+    rows: list[dict] = []
+    valid_count = 0
+    excluded_count = 0
+    reference_energy_deltas: list[dict] = []
+    energy_by_system: dict[str, list[float]] = defaultdict(list)
+
+    for system, panel in SYSTEMS:
+        panel_root = repo / panel
+        if not panel_root.is_dir():
+            raise RuntimeError(f"Missing panel directory: {panel_root}")
+        for point_dir in sorted(path for path in panel_root.iterdir() if path.is_dir()):
+            metadata = point_metadata(point_dir.name)
+            calculations: list[tuple[str, dict]] = []
             if system == "GW100":
-                worst_molecule = calc_dirs[worst_index].name
-                recomputed = sum(errors) / 100.0
-                display = recomputed
-                p95 = percentile(errors, 0.95)
+                case_dirs = sorted(path for path in point_dir.iterdir() if path.is_dir())
+                if len(case_dirs) != 100:
+                    raise RuntimeError(f"Expected 100 GW100 entries in {point_dir}; found {len(case_dirs)}")
+                for case_dir in case_dirs:
+                    output = case_dir / "output.log"
+                    excluded = case_dir / "EXCLUDED.txt"
+                    if output.is_file():
+                        calculations.append((case_dir.name, parse_output(output)))
+                        valid_count += 1
+                    elif excluded.is_file():
+                        excluded_count += 1
+                    else:
+                        raise RuntimeError(f"Missing output or EXCLUDED.txt: {case_dir}")
             else:
-                worst_molecule = system
-                recomputed = errors[0]
-                display = max(1.0, float(round(recomputed)))
-                p95 = recomputed
-            rows.append({
-                "panel": letter,
-                "system": system,
-                "radius_angstrom": radius,
-                "orbital": orbital,
-                "ri_ao_ratio": ratio,
-                "rs_ao_ratio": alpha,
-                "coverage": f"{len(errors)}/{expected_n}",
-                "raw_error_meV": recomputed,
-                "error_meV": display,
-                "p95_abs_error_meV": p95,
-                "max_abs_error_meV": max(errors),
-                "worst_molecule": worst_molecule,
-                "worst_signed_error_meV": signed[worst_index],
-            })
-    return rows
+                calculations.append((system, parse_output(point_dir / "output.log")))
+                valid_count += 1
+
+            if not calculations:
+                raise RuntimeError(f"No valid calculations in {point_dir}")
+            if metadata["method"] == "AUTO_RI":
+                x_value = float(metadata["requested_ri_ao_ratio"])
+            else:
+                x_value = statistics.fmean(
+                    float(value["n_ri"]) / float(value["n_ao"])
+                    for _, value in calculations
+                )
+
+            signed_errors = {"homo": [], "lumo": []}
+            for case, value in calculations:
+                reference = reference_for(references, system, case)
+                energy = float(value["total_energy_hartree"])
+                energy_by_system[system].append(energy)
+                if "total_energy_hartree" in reference:
+                    reference_energy_deltas.append(
+                        {
+                            "system": system,
+                            "case": case,
+                            "point": point_dir.name,
+                            "delta_hartree": energy - float(reference["total_energy_hartree"]),
+                        }
+                    )
+                for orbital in ("homo", "lumo"):
+                    signed_errors[orbital].append(
+                        1000.0 * (float(value[f"{orbital}_eV"]) - float(reference[f"{orbital}_eV"]))
+                    )
+
+            for orbital in ("homo", "lumo"):
+                absolute = [abs(value) for value in signed_errors[orbital]]
+                error = statistics.fmean(absolute) if system == "GW100" else absolute[0]
+                plotted_error = (
+                    max(1.0, error)
+                    if system == "GW100"
+                    else max(1.0, float(round(error)))
+                )
+                rows.append(
+                    {
+                        "system": system,
+                        "orbital": orbital,
+                        "series": metadata["series"],
+                        "method": metadata["method"],
+                        "neighbor_radius_angstrom": metadata["neighbor_radius_angstrom"],
+                        "point": point_dir.name,
+                        "x_ri_ao_ratio": x_value,
+                        "valid_calculations": len(calculations),
+                        "error_raw_meV": error,
+                        "error_plotted_meV": plotted_error,
+                    }
+                )
+
+    if valid_count != 2505 or excluded_count != 43 or len(rows) != 146:
+        raise RuntimeError(
+            f"Unexpected coverage: valid={valid_count}, excluded={excluded_count}, coordinates={len(rows)}"
+        )
+    worst = max(reference_energy_deltas, key=lambda item: abs(item["delta_hartree"]))
+    validation = {
+        "valid_calculations": valid_count,
+        "excluded_calculations": excluded_count,
+        "figure_coordinates": len(rows),
+        "reference_paired_calculations": len(reference_energy_deltas),
+        "maximum_absolute_reference_energy_delta_hartree": abs(worst["delta_hartree"]),
+        "worst_reference_energy_delta": worst,
+        "all_reference_pairs_within_1e-6_hartree": all(
+            abs(item["delta_hartree"]) <= 1.0e-6 for item in reference_energy_deltas
+        ),
+        "energy_spread_by_system_hartree": {
+            system: max(values) - min(values)
+            for system, values in energy_by_system.items()
+            if system != "GW100"
+        },
+    }
+    if not validation["all_reference_pairs_within_1e-6_hartree"]:
+        raise RuntimeError(f"Reference SCF-state mismatch: {worst}")
+    return rows, validation
 
 
-def plot(rows: list[dict], output: Path) -> None:
+def plot(path: Path, rows: list[dict]) -> None:
     try:
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
     except ImportError as exc:
         raise RuntimeError("Plotting requires matplotlib (python -m pip install matplotlib)") from exc
-    lookup = {
-        (r["panel"], int(r["ri_ao_ratio"]), int(r["rs_ao_ratio"])): float(r["error_meV"])
-        for r in rows
-    }
-    fig, axes = plt.subplots(4, 6, figsize=(15.5, 10.8), sharex=True, sharey=True)
-    for ax, (letter, (system, radius, orbital)) in zip(axes.flat, PANELS.items()):
-        for ratio in (2, 3, 4, 5):
-            x = list(range(2, 11))
-            y = [lookup[(letter, ratio, alpha)] for alpha in x]
-            ax.plot(x, y, "o-", ms=3.0, lw=1.15, color=COLORS[ratio], label=f"$N_{{RI}}={ratio}N_{{AO}}$")
-        ax.set_yscale("log")
-        ax.set_ylim(0.9, 1100)
-        ax.set_xticks([2, 4, 6, 8, 10])
-        ax.grid(True, which="both", alpha=0.25)
-        ax.set_title(f"({letter}) {system} {orbital}; $R_{{RS}}={radius:g}$ Å", fontsize=8)
-    for ax in axes[:, 0]:
-        ax.set_ylabel("error (meV)")
-    for ax in axes[-1, :]:
-        ax.set_xlabel(r"$N_{RS}/N_{AO}$")
+
+    panels = (
+        ("GW100", "homo", r"$\mathit{GW}100$ $G_0W_0$ HOMO", "MAE (meV)", (6.0, 1300.0)),
+        ("GW100", "lumo", r"$\mathit{GW}100$ $G_0W_0$ LUMO", "MAE (meV)", (6.0, 1300.0)),
+        ("Si45H56", "homo", r"Si$_{45}$H$_{56}$ $G_0W_0$ HOMO", "Abs. error (meV)", (0.8, 300.0)),
+        ("Si45H56", "lumo", r"Si$_{45}$H$_{56}$ $G_0W_0$ LUMO", "Abs. error (meV)", (0.8, 300.0)),
+        ("Si293H172", "homo", r"Si$_{293}$H$_{172}$ $G_0W_0$ HOMO", "Abs. error (meV)", (0.8, 300.0)),
+        ("Si293H172", "lumo", r"Si$_{293}$H$_{172}$ $G_0W_0$ LUMO", "Abs. error (meV)", (0.8, 300.0)),
+    )
+    lookup: dict[tuple[str, str, str], list[dict]] = defaultdict(list)
+    for row in rows:
+        lookup[(row["system"], row["orbital"], row["series"])].append(row)
+    for values in lookup.values():
+        values.sort(key=lambda row: float(row["x_ri_ao_ratio"]))
+
+    markers = {"auto_r0.5": "o", "auto_r3": "s", "auto_r5": "^", "tabulated": "D"}
+    fig, axes = plt.subplots(3, 2, figsize=(9.0, 10.5), sharex=True)
+    for letter, axis, (system, orbital, title, ylabel, limits) in zip("abcdef", axes.flat, panels):
+        for series in SERIES:
+            values = lookup[(system, orbital, series)]
+            axis.plot(
+                [float(row["x_ri_ao_ratio"]) for row in values],
+                [float(row["error_plotted_meV"]) for row in values],
+                marker=markers[series], color=COLORS[series], lw=1.6, ms=4.5,
+                label=LABELS[series],
+            )
+        axis.set_yscale("log")
+        axis.set_xlim(0.7, 5.35)
+        axis.set_ylim(*limits)
+        axis.grid(True, which="both", color="#d5d5d5", lw=0.5)
+        axis.set_ylabel(ylabel)
+        axis.text(0.02, 0.96, f"({letter})", transform=axis.transAxes, va="top")
+        axis.text(
+            0.98, 0.96, title, transform=axis.transAxes, ha="right", va="top",
+            bbox={"facecolor": "white", "edgecolor": "#bbbbbb", "pad": 2.0},
+        )
+    for axis in axes[-1, :]:
+        axis.set_xlabel(r"$N_{RI}/N_{AO}$")
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="upper center", ncol=4, frameon=False, bbox_to_anchor=(0.5, 0.995))
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(output, dpi=300, bbox_inches="tight")
+    fig.legend(handles, labels, loc="upper center", ncol=4, frameon=False)
+    fig.tight_layout(rect=(0, 0, 1, 0.965))
+    fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
     fieldnames = (
-        "panel",
         "system",
-        "radius_angstrom",
         "orbital",
-        "ri_ao_ratio",
-        "rs_ao_ratio",
-        "coverage",
-        "raw_error_meV",
-        "error_meV",
-        "p95_abs_error_meV",
-        "max_abs_error_meV",
-        "worst_molecule",
-        "worst_signed_error_meV",
+        "series",
+        "method",
+        "neighbor_radius_angstrom",
+        "point",
+        "x_ri_ao_ratio",
+        "valid_calculations",
+        "error_raw_meV",
+        "error_plotted_meV",
     )
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
@@ -226,24 +311,19 @@ def main() -> None:
     parser.add_argument("--repo", type=Path, default=support.parent)
     parser.add_argument("--output-dir", type=Path, default=support)
     args = parser.parse_args()
-    repo = args.repo.resolve()
-    output = args.output_dir.resolve()
-    output.mkdir(parents=True, exist_ok=True)
-    rows = calculate(repo)
-    gw = [r for r in rows if r["system"] == "GW100"]
-    nano = [r for r in rows if r["system"] != "GW100"]
-    if len(rows) != 864 or len(gw) != 216 or len(nano) != 648:
-        raise RuntimeError(
-            f"unexpected Figure 3 coverage: total={len(rows)}, GW100={len(gw)}, nanoclusters={len(nano)}"
-        )
-    if any(row["coverage"] != "100/100" for row in gw):
-        raise RuntimeError("not every GW100 point contains all 100 molecules")
-    csv_path = output / "Figure_3_created.csv"
-    png_path = output / "Figure_3_created.png"
+    repo = args.repo.resolve(strict=True)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    references = load_references(repo)
+    rows, validation = collect(repo, references)
+    csv_path = args.output_dir / "Figure_3_created.csv"
+    png_path = args.output_dir / "Figure_3_created.png"
     write_csv(csv_path, rows)
-    plot(rows, png_path)
-    print("Read 864 plotted values directly from the archived calculations")
-    print("Every GW100 point contains all 100 molecules")
+    plot(png_path, rows)
+    print(
+        f"Read {validation['valid_calculations']} valid calculations, "
+        f"{validation['excluded_calculations']} exclusions, and "
+        f"{validation['reference_paired_calculations']} TensorGW comparison pairs"
+    )
     print(f"Wrote {csv_path}")
     print(f"Wrote {png_path}")
 
