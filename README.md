@@ -35,9 +35,11 @@ The Si45H56 and H24P64 TensorGW references were repeated with
 calculations in `Figure_4i/` and `Figure_4j/` use `EPS_FILTER 1.0E-10`.
 The 108 H24P64 Figure 4(s–x) calculations in `Figure_4s/`–`Figure_4x/`
 use `EPS_FILTER 1.0E-12`; the 1.0E-10 runs are retained in
-`Filter_Controls/`. The earlier Si45H56 Figure 4(g,h,k,l) calculations
-still use `EPS_FILTER 1.0E-7`; their errors use the updated TensorGW
-reference. The cancelled Si45H56 5-Å repeat was not substituted.
+`Filter_Controls/`. The Si45H56 Figure 4(k,l) 5-Å calculations were repeated as a complete
+36-point series at `EPS_FILTER 1.0E-10` using the original TensorGW
+CP2K build. The old 1.0E-7 inputs and outputs were removed from these
+active panels; Git history preserves them. The 0.5-Å Figure 4(g,h)
+calculations still use `EPS_FILTER 1.0E-7`.
 
 ## Create the figures and data
 
