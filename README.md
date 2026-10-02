@@ -44,6 +44,40 @@ calculations still use `EPS_FILTER 1.0E-7`.
 
 The 108 H60P400 Figure 4(y–ad) calculations use `EPS_FILTER 1.0E-10`, 30 time/frequency points, and a converged SCF wavefunction restart. The working RI/AO=4, RS/AO=7 reference at 3 Å yields HOMO/LUMO = -4.683/-2.182 eV. The RS/AO=8 control shifts them by -6/+2 meV at tighter filtering, so this reference remains provisional. See `Fixed_References/H60P400_RI-RS_controls/README.md` for the Slurm accounting exception and orbital-reordering notes.
 
+## GW100 Figure 3 and Figure 4 consistency
+
+The optimized GW100 curves in current Figure 3(a,b) use exactly the
+Figure 4(c,d) calculations at RS/AO=7, for requested RI/AO=2,3,4,5.
+The inputs and outputs in `Figure_3a/` and `Figure_3b/` are byte-identical
+to the corresponding Figure-4 slice. They use RI neighbor functions within
+3 Angstrom, radial-Lebedev Cholesky initialization (`D_PRIME`, `FULL_ATOM`,
+`GAPW_LOG`), a 3-Angstrom grid cluster, and `EPS_FILTER=1e-7`.
+The main Figure-3 plot uses atom-local optimized RI for the silicon panels.
+Its CSV reports coverage, MAE, P95, maximum error, and the worst signed error.
+Requested optimized RI/AO ratios can exceed the actual ratio after rank
+exhaustion; tabulated GW100 x values are mean actual ratios.
+
+At requested RI/AO=4, HOMO/LUMO MAEs are 6.46/2.39 meV; at 5 they are
+5.60/1.96 meV. All four optimized GW100 points use 100 molecule/reference pairs.
+The seven tabulated points use 100,100,100,100,91,89,77 molecules.
+The final three are explicitly incomplete GW100 diagnostics (open markers),
+and use an earlier grid setup. This comparison does not isolate RI-basis error.
+For example, BeO contributes +1089 meV to the largest tabulated LUMO point,
+about 85.2% of its absolute error sum. Small MAE does not guarantee 10-meV
+accuracy for every molecule.
+
+`Historical_Figure_3/` preserves the previous GW100 inputs, outputs, and
+all-radius plot, including the atom-local GW100 curve previously displayed
+in the manuscript. It is historical/supporting data, not the current plot.
+To reproduce it, run `python3 Historical_Figure_3/plot_figure_3_historical.py`.
+
+`Pending_Calculations/GW100_Figure_3_RI_AO_1_1p5/` contains the 200
+newly submitted inputs and individual Slurm scripts for the matching
+RI/AO=1 and 1.5 extension, together with submission and source manifests.
+No completed output or figure point for these two ratios is claimed here.
+They will enter the figure only after complete validation of each 100-molecule
+series against the same TensorGW references.
+
 ## Create the figures and data
 
 Run the scripts from the repository root:
