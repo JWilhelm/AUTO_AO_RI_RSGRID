@@ -58,7 +58,7 @@ Requested optimized RI/AO ratios can exceed the actual ratio after rank
 exhaustion; tabulated GW100 x values are mean actual ratios.
 
 At requested RI/AO=4, HOMO/LUMO MAEs are 6.46/2.39 meV; at 5 they are
-5.60/1.96 meV. All four optimized GW100 points use 100 molecule/reference pairs.
+5.60/1.96 meV. All six optimized GW100 points use 100 molecule/reference pairs.
 The seven tabulated points use 100,100,100,100,91,89,77 molecules.
 The final three are explicitly incomplete GW100 diagnostics,
 and use an earlier grid setup. This comparison does not isolate RI-basis error.
@@ -71,12 +71,16 @@ all-radius plot, including the atom-local GW100 curve previously displayed
 in the manuscript. It is historical/supporting data, not the current plot.
 To reproduce it, run `python3 Historical_Figure_3/plot_figure_3_historical.py`.
 
-`Pending_Calculations/GW100_Figure_3_RI_AO_1_1p5/` contains the 200
-newly submitted inputs and individual Slurm scripts for the matching
-RI/AO=1 and 1.5 extension, together with submission and source manifests.
-No completed output or figure point for these two ratios is claimed here.
-They will enter the figure only after complete validation of each 100-molecule
-series against the same TensorGW references.
+`Pending_Calculations/GW100_Figure_3_RI_AO_1_1p5/` now contains all 200
+completed original outputs, orbital-resolved band tables, Slurm logs and
+validation evidence for the RI/AO=1 and 1.5 extension. The original directory
+name is retained for existing links. All 200 runs are Slurm COMPLETED/0:0,
+with converged SCF states and normal CP2K termination, verified October 3, 2026.
+The two new points use exactly the same Figure-4 settings and TensorGW references.
+At RI/AO=1, HOMO/LUMO MAEs are 400.42/122.53 meV; at 1.5, 95.90/40.61 meV.
+The full 100-molecule populations include the large CuCN, TiF4 and BeO errors.
+See `validation.json` and `statistics.csv` in the campaign directory for P95,
+maxima, orbital-edge verification and warning classification.
 
 ## Create the figures and data
 

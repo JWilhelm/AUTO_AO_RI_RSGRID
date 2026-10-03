@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Recompute current Figure 3 from raw CP2K outputs.
 
-GW100 uses precisely the RS/AO=7 slice of Figure 4(c,d), with RI neighbors
-within 3 Angstrom. Silicon uses atom-local optimized RI. Incomplete tabulated
+GW100 RI/AO2--5 uses precisely the RS/AO=7 slice of Figure 4(c,d);
+RI/AO1 and1.5 extends it with identical settings and RI neighbors within 3 Angstrom. Silicon uses atom-local optimized RI. Incomplete tabulated
 GW100 diagnostics remain visible with explicit coverage.
 """
 

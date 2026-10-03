@@ -1,8 +1,10 @@
-# Submitted GW100 Figure 3 RI/AO=1 and 1.5 extension
+# Completed GW100 Figure 3 RI/AO=1 and 1.5 extension
 
 Submission archive, October 2, 2026: 200 independent one-node CoopFST jobs,
 IDs 34586224--34586423, with no arrays or dependencies. This directory contains
-inputs and job scripts, not validated completed outputs.
+inputs, job scripts, original completed outputs, orbital-resolved band tables,
+and Slurm stdout/stderr. All 200 jobs completed with exit code zero and normal
+CP2K termination, verified on October 3, 2026.
 
 Each ratio covers all 100 GW100 molecules using the original Figure-4(c,d)
 CP2K build and settings: aug-SZV-MOLOPT-GTH-tier-2, RS/AO=7, RI neighbors 3 Å,
@@ -20,6 +22,12 @@ wavefunction provenance, timing-based limits and MPI/OpenMP layouts.
 The preparation/submission scripts are retained for provenance, not automatic
 execution by the figure workflow. No missing result is filled from older runs.
 
-Completed outputs will be added after Slurm/application validation and checks
-of the SCF state, printed settings, errors and warnings. Figure-3 statistics
-require all 100 valid reference pairs for each new ratio.
+`validation.json` records SCF, settings, orbital-edge and warning checks,
+including P95, maximum errors and raw outlier inspection. `statistics.csv`
+contains both complete 100-molecule series. `completion_status.json` preserves
+the Slurm/application evidence. The original directory name is retained for
+backward links; this campaign is complete.
+
+RI/AO 1: HOMO/LUMO MAE 400.42/122.53 meV.
+RI/AO 1.5: HOMO/LUMO MAE 95.90/40.61 meV.
+The same outputs are included in the active Figure_3a/b directories.
