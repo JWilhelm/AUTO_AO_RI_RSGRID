@@ -7,6 +7,8 @@ The panel directories and plot workflows below follow the current manuscript.
 
 ## Repository layout
 
+- `Figure_5_GW100/` contains all 10,800 RI-RS calculations and the 100 selected TensorGW references used in Figure 5(a–f), including adenine, with raw logs, basis files and reproducible averages.
+
 - `Figure_1a/`–`Figure_1f/`, `Figure_3a/`–`Figure_3f/`, and
   `Figure_4a/`–`Figure_4ad/` contain raw CP2K inputs and outputs.
 - `Fixed_References/Si293H172_RI-RS_reference/` preserves the raw input and
