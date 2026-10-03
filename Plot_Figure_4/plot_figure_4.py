@@ -80,6 +80,12 @@ def load_references(repo: Path) -> dict[tuple[str, str], dict[str, float | None]
         references[("GW100", case_dir.name)] = parse_output(
             case_dir / "output.log", require_rirs=False
         )
+    # These four references are specific to Figure 4; Figure 3 retains its sources.
+    for molecule in ("88_C6F6", "86_C7H8", "54_LiF", "84_BeO"):
+        references[("GW100", molecule)] = parse_output(
+            repo / "Figure_4_GW100_References" / molecule / "output.log",
+            require_rirs=False,
+        )
     references[("Si45H56", "Si45H56")] = parse_output(
         tensor_root / "Si45H56_TensorGW" / "output.log", require_rirs=False
     )

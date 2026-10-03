@@ -100,3 +100,11 @@ python3 Plot_Figure_4/plot_figure_4.py
 Each script reads archived outputs directly and writes its
 `Figure_N_created.csv` and `Figure_N_created.png` from the same points.
 Matplotlib is required.
+
+## Selected GW100 Figure 4 corrections (3 October 2026)
+
+Figure 4(a–f) uses the four selected Tensor references documented in
+[Figure_4_GW100_References](Figure_4_GW100_References/README.md), together with four
+LiF/BeO RI-RS filter replacements in Figure 4(e,f). Every point still includes all
+100 molecules. Only calculations used in the figure are included in this update;
+the remaining diagnostic sweep is not imported. Figure 3 is unchanged.
