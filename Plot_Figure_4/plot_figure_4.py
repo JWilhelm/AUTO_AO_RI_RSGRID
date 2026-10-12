@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Recompute and plot all 30 archived panels of current manuscript Figure 4.
+"""Recompute the archived Figure 4 series from CP2K outputs.
 
-The calculation outputs and TensorGW reference outputs are parsed directly.
-GW100 statistics always use all 100 molecules.  A GW100 point fails instead
-of silently dropping a missing, invalid, or state-mismatched molecule.
+Panels (g--ad) are the current manuscript series. The (a--f) output of this
+legacy plotting workflow uses the original EPS_FILTER=1e-7 campaign, not the
+current EPS_FILTER=1e-12 series. Run Figure_4_GW100_current_eps12/reproduce.py
+for the current (a--f) manuscript data. Missing old GW100 outputs fail rather
+than silently lowering the denominator.
 """
 
 from __future__ import annotations
@@ -116,7 +118,9 @@ def calculate(repo: Path) -> list[dict]:
     cache: dict[Path, dict[str, float]] = {}
     for letter, (system, radius, orbital) in PANELS.items():
         panel_dir = repo / f"Figure_4{letter}"
-        actual_points = {p.name for p in panel_dir.iterdir() if p.is_dir()}
+        # The manuscript's updated GW100 runs live in current_eps12/;
+        # this legacy plotting workflow still checks the archived point set.
+        actual_points = {p.name for p in panel_dir.iterdir() if p.is_dir() and p.name != "current_eps12"}
         if actual_points != set(expected_points):
             raise RuntimeError(f"Figure_4{letter} point topology mismatch")
         for point_name in expected_points:
