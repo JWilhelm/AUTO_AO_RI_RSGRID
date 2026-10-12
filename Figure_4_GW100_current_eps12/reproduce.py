@@ -28,8 +28,8 @@ def main():
     with (DATA/'missing.csv').open() as f: missing=list(csv.DictReader(f))
     with (DATA/'references.csv').open() as f: references=list(csv.DictReader(f))
     with (DATA/'plot_coordinates.csv').open() as f: plot=list(csv.DictReader(f))
-    assert len(rows)==10710, len(rows)
-    assert len(missing)==90, len(missing)
+    assert len(rows)==10800, len(rows)
+    assert len(missing)==0, len(missing)
     assert len(references)==100 and len(plot)==216
     issues=[]; sums=defaultdict(list)
     for r in references:
