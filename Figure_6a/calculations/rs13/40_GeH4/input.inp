@@ -1,0 +1,102 @@
+&GLOBAL
+  PRINT_LEVEL LOW
+  PROJECT f599_40_GeH4_c05_r13
+  RUN_TYPE ENERGY
+&END GLOBAL
+&FORCE_EVAL
+  METHOD QUICKSTEP
+  &DFT
+    BASIS_SET_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/218_cp2k_gw_main_20260927/cp2k-gw-bandstructure-main/data/EMSL_BASIS_SETS
+    POTENTIAL_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/218_cp2k_gw_main_20260927/cp2k-gw-bandstructure-main/data/POTENTIAL
+    BASIS_SET_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/463_GW100_def2TZVP_AE_fixedRIFIT_Lebedev_20261013/assets/def2_TZVP_RIFIT_from_GWP36.basis
+    WFN_RESTART_FILE_NAME /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_RI_opt/462_GW100_def2TZVP_AE_autoRI3_Lebedev_20261012/scf/40_GeH4/ae_40_GeH4_scf-RESTART.wfn
+    &MGRID
+      CUTOFF 800
+      REL_CUTOFF 80
+    &END MGRID
+    &QS
+      METHOD GAPW
+      EPS_DEFAULT 1.0E-12
+      EPS_PGF_ORB 1.0E-12
+    &END QS
+    &POISSON
+      PERIODIC NONE
+      POISSON_SOLVER MULTIPOLE
+      &MULTIPOLE
+        &PROGRAM_RUN_INFO OFF
+        &END PROGRAM_RUN_INFO
+      &END MULTIPOLE
+    &END POISSON
+    &SCF
+      EPS_SCF 1.0E-8
+      MAX_SCF 500
+      SCF_GUESS RESTART
+      &OT
+        MINIMIZER DIIS
+        PRECONDITIONER FULL_ALL
+      &END OT
+      &OUTER_SCF
+        EPS_SCF 1.0E-8
+        MAX_SCF 20
+      &END OUTER_SCF
+      &PRINT
+        &RESTART OFF
+          BACKUP_COPIES 0
+        &END RESTART
+      &END PRINT
+    &END SCF
+    &XC
+      &XC_FUNCTIONAL PBE0
+      &END XC_FUNCTIONAL
+    &END XC
+  &END DFT
+  &PROPERTIES
+    &BANDSTRUCTURE
+      &GW
+        NUM_TIME_FREQ_POINTS 30
+        EPS_FILTER 1.0E-10
+        FREQ_MAX_FIT [eV] 10
+        CUTOFF_RADIUS_RI [angstrom] 11
+        &RI_RS
+          TIKHONOV 1.0E-5
+          &GRID_OPTIMIZATION
+            RS_AO_RATIO 13
+            CUTOFF_ATOMIC_CLUSTER [angstrom] 0.5
+            MAX_ITER 100
+          &END GRID_OPTIMIZATION
+        &END RI_RS
+        &PRINT
+          &RESTART OFF
+          &END RESTART
+        &END PRINT
+      &END GW
+    &END BANDSTRUCTURE
+  &END PROPERTIES
+  &SUBSYS
+    &CELL
+      ABC [angstrom] 25 25 25
+      PERIODIC NONE
+    &END CELL
+    &COORD
+      Ge 0.0000 0.0000 0.0000
+      H 0.8805 -0.8805 0.8805
+      H -0.8805 0.8805 0.8805
+      H -0.8805 -0.8805 -0.8805
+      H 0.8805 0.8805 -0.8805
+    &END COORD
+    &KIND Ge
+      BASIS_SET Ahlrichs-def2-TZVP
+      BASIS_SET RI_AUX def2-TZVP-RIFIT
+      POTENTIAL ALL
+    &END KIND
+    &KIND H
+      BASIS_SET Ahlrichs-def2-TZVP
+      BASIS_SET RI_AUX def2-TZVP-RIFIT
+      POTENTIAL ALL
+    &END KIND
+    &TOPOLOGY
+      &CENTER_COORDINATES
+      &END CENTER_COORDINATES
+    &END TOPOLOGY
+  &END SUBSYS
+&END FORCE_EVAL
