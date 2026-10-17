@@ -1,0 +1,3 @@
+# SCF wavefunction restarts for Figures 1–5
+
+The 320 available unique SCF-WFN restart files referenced by the current Figures 1–5 GW100 inputs are preserved here once each, under their original path relative to the authorized Noctua project root. All selected GW100 molecules have at most 18 atoms. The restart files were selected only where a current panel input explicitly names a WFN file for one of those small molecules. Large Si/phosphorene systems were excluded as requested. `manifest.json` maps each restart to a source input and provides a SHA-256 hash and byte size. Original CP2K inputs retain their absolute cluster paths.
