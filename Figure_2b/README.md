@@ -1,3 +1,3 @@
 # Figure 2b
 
-Current manuscript Figure 2(b). Files are byte-identical to `Figure_1b/`; no second calculation was performed. Figure 1 shows PBE and G0W0 gap errors/values, while Figure 2 shows HOMO/LUMO errors/energies from the same raw calculations.
+GW100: G₀W₀ HOMO/LUMO errors with initial and optimized AO bases. These are the same calculations as [Figure 1b](../Figure_1b/), grouped by basis and optimization state. The GW100 aug-TZVP references are in `Reference_aug-TZVP-t1/`; Xe is excluded because the required reference basis is unavailable.

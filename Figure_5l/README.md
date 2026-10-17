@@ -1,3 +1,3 @@
 # Figure 5l
 
-Current manuscript Figure 5(l): Si45H56 LUMO error at RI-RS radius 5 Å, aug-DZVP-MOLOPT-GTH-tier-2. All 36 grid calculations and the matching TensorGW reference have `EPS_FILTER=1e-12`. Reference HOMO/LUMO = −7.191/−1.502 eV. Raw input, normal CP2K output and orbital table are kept for each point.
+Si45H56: G₀W₀ LUMO errors with aug-DZVP-MOLOPT-GTH-tier-2 and RI-RS cluster radius 5 Å. `calculations/` contains the inputs, outputs and orbital energies, with `EPS_FILTER=1e-12`. [TensorGW_reference/](TensorGW_reference/) contains the matching reference (HOMO/LUMO −7.191/−1.502 eV).

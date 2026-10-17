@@ -1,5 +1,3 @@
-# H60P400 Figure 4 reference
+# H60P400 reference for Figure 4(y–ad)
 
-The plotted reference is `base_e10`: R_RS=3 Å, RI/AO=4, RS/AO=7, EPS_FILTER=1e-10, 30 time/frequency points. Its G0W0 HOMO/LUMO are -4.683/-2.182 eV. The RS/AO=7 reference is provisional rather than a demonstrated fully converged limit.
-
-The 108 Figure 4(y)-(ad) output logs ended normally with WFN restarts. At the pinned snapshot, 92 jobs had Slurm COMPLETED/0:0; for 16 jobs Slurm accounting still reported RUNNING/0:0 after they left squeue and CP2K ended normally. The `job_metadata.json` files preserve this distinction. Three 0.5-Å, RS/AO=3 runs reorder empty G0W0 levels; their bandstructure files are preserved with both panel copies. Large WFN files are on Noctua 2 and are not included in Git.
+`base_e10/` contains the RI-RS reference: cluster radius 3 Å, RI/AO 4, RS/AO 7, `EPS_FILTER=1e-10` and 30 time/frequency points. Its G₀W₀ HOMO/LUMO energies are −4.683/−2.182 eV. This reference has not been established as a fully converged limit.

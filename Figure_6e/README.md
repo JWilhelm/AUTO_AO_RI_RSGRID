@@ -1,5 +1,5 @@
 # Figure 6e
 
-Current manuscript Figure 6(e): GW100 $G_0W_0$ @ PBE/def2-QZVP, $R_{\mathrm{RS}}=3$ Å, RI-RS grid size $N_{\mathrm{RS}}=\alpha N_{\mathrm{AO}}$ with $\alpha=2,\ldots,13$. Each `calculations/rsNN/<molecule>/` directory contains the original CP2K `input.inp`, `output.log`, and `bandstructure_SCF_and_G0W0` for one accepted molecule and grid size. There are 100 molecules per grid size, 1200 accepted calculations in this panel.
+GW100 G₀W₀@PBE/def2-QZVP, RI-RS cluster radius 3 Å and RS/AO 2–13. Each `calculations/rsNN/<molecule>/` directory contains a CP2K input, output and orbital table. There are 100 molecules per grid size. HOMO statistics exclude BN, BeO, MgO, O3 and CuCN; LUMO statistics include all 100 molecules.
 
-Production sources: 597 on Noctua 2 and Otus. The original inputs retain their absolute cluster paths for provenance. Exact SCF-WFN restarts, geometries, basis and potential files are shared in [`Figure_6a/reproducibility/assets/`](../Figure_6a/reproducibility/assets/). [`Figure_6a/reproducibility/reproduce.py`](../Figure_6a/reproducibility/reproduce.py) checks every file hash, SCF restart, final CP2K marker, orbital identity, fitting error, evaluation count, and the plotted MAE and median coordinates.
+[Reference orbital energies](../Figure_6a/reproducibility/reference_pbe_def2_qzvp.csv) and shared [SCF wavefunctions, geometries and basis files](../Figure_6a/reproducibility/assets/) are provided.

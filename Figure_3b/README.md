@@ -1,3 +1,3 @@
 # Figure 3b
 
-Current manuscript Figure 3(b). Raw CP2K input/output data are in this folder. Reproduce the plotted values with `Figure_3a/reproducibility/plot_figure_3.py`; see the repository-level audit for reference and coverage details.
+GW100: G₀W₀ LUMO errors versus RI-basis size. The folders contain calculations with optimized and tabulated RI bases. Matching [TensorGW reference calculations](../Figure_4a/reproducibility/tensor_references/GW100_TensorGW/) are provided. `EXCLUDED.txt` identifies unavailable tabulated-basis cases.

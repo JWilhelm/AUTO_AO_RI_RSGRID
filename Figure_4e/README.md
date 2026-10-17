@@ -1,3 +1,3 @@
 # Figure 4e
 
-Current manuscript Figure 4(e) uses `current_eps12/`: GW100, aug-SZV-MOLOPT-GTH-tier-2, `EPS_FILTER=1e-12`, RI-RS radius 5 Å. Each molecule has its input, normal CP2K output and orbital table. Compare with the TensorGW outputs in `Figure_4a/reproducibility/tensor_references/GW100_TensorGW/`. `Figure_4a/reproducibility/current_gw100/` contains the molecule-level values, exact checksums, 216 complete 100-molecule aggregates.
+GW100: G₀W₀ HOMO errors with aug-SZV-MOLOPT-GTH-tier-2 and RI-RS cluster radius 5 Å. Calculations are in `current_eps12/ri<RI>_rs<RS>/<molecule>/`, with `EPS_FILTER=1.0E-12`. [Reference energies and calculation paths](../Figure_4a/reproducibility/current_gw100/references.csv) identify the matching TensorGW result for each molecule.

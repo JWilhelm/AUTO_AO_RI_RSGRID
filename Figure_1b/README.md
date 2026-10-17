@@ -1,3 +1,3 @@
 # Figure 1b
 
-Current manuscript Figure 1(b). Raw CP2K inputs and outputs; reproduce the plotted data with `Figure_1a/reproducibility/plot_figure_1.py`. Figure 2(b) uses the same calculations.
+GW100: G₀W₀ gap errors with initial and optimized AO bases. Calculation folders are grouped by basis and optimization state. The same calculations provide the HOMO/LUMO data in [Figure 2b](../Figure_2b/). The GW100 aug-TZVP references are in `Reference_aug-TZVP-t1/`; Xe is excluded because the required reference basis is unavailable.

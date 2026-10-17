@@ -1,3 +1,3 @@
 # Figure 1c
 
-Current manuscript Figure 1(c). Raw CP2K inputs and outputs; reproduce the plotted data with `Figure_1a/reproducibility/plot_figure_1.py`. Figure 2(c) uses the same calculations.
+Si45H56: PBE gap values with initial and optimized AO bases. Calculation folders are grouped by basis and optimization state. The same calculations provide the HOMO/LUMO data in [Figure 2c](../Figure_2c/).

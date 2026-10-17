@@ -1,3 +1,3 @@
 # Figure 4o
 
-Current manuscript Figure 4(o). Raw CP2K input/output files are preserved directly in this folder. `Figure_4g/reproducibility/plot_figure_4.py` reproduces the current panel data; the reference and any filter differences are documented in the root README.
+Si293H172: G₀W₀ HOMO errors with aug-SZV-MOLOPT-GTH-tier-2 and RI-RS cluster radius 3 Å. Calculations are in `RI-AO-ratio-<RI>_RS-AO-ratio-<RS>/`, with `EPS_FILTER=1.0E-7`. The [reference calculation](../Figure_4a/reproducibility/cluster_references/Si293H172_RI-RS_reference/) is provided.
