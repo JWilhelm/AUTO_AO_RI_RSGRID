@@ -24,6 +24,8 @@ def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def main():
     with (DATA/'molecule_errors.csv').open() as f: rows=list(csv.DictReader(f))
+    with (REPO/'Figure_1a/reproducibility/public_master_input_migration_20261017.csv').open() as f:
+        migrations={row['input']:row for row in csv.DictReader(f)}
     with (DATA/'aggregate.csv').open() as f: aggregate=list(csv.DictReader(f))
     with (DATA/'missing.csv').open() as f: missing=list(csv.DictReader(f))
     with (DATA/'references.csv').open() as f: references=list(csv.DictReader(f))
@@ -42,6 +44,10 @@ def main():
         if not (inp.is_file() and out.is_file() and orb.is_file()): issues.append((i,'missing raw',src)); continue
         if sha(inp)!=r['input_sha256'] or sha(out)!=r['output_sha256']:
             issues.append((i,'sha256 mismatch',src));continue
+        migration=migrations.get(inp.relative_to(REPO).as_posix())
+        if migration is None or (migration['historical_input_sha256']!=r['historical_input_sha256'] or
+                                 migration['master_input_sha256']!=r['input_sha256']):
+            issues.append((i,'historical input provenance mismatch',src));continue
         output=out.read_text()
         if 'PROGRAM ENDED AT' not in output: issues.append((i,'CP2K end absent',src))
         if not re.search(r'EPS_FILTER\s+1(?:\.0)?E-12',inp.read_text(),re.I):

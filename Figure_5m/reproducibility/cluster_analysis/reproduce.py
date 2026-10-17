@@ -24,6 +24,8 @@ def orbitals(path):
 
 def main():
     with (DATA/'points.csv').open() as f:rows=list(csv.DictReader(f))
+    with (REPO/'Figure_1a/reproducibility/public_master_input_migration_20261017.csv').open() as f:
+        migrations={row['input']:row for row in csv.DictReader(f)}
     assert len(rows)==216,len(rows)
     seen=set()
     for r in rows:
@@ -33,6 +35,8 @@ def main():
         d=REPO/r['calculation']
         for file,column in [('input.inp','input_sha256'),('output.log','output_sha256'),('bandstructure_SCF_and_G0W0','orbitals_sha256')]:
             assert sha(d/file)==r[column],(key,file)
+        migration=migrations.get((d/'input.inp').relative_to(REPO).as_posix())
+        assert migration and migration['historical_input_sha256']==r['historical_input_sha256'] and migration['master_input_sha256']==r['input_sha256'],key
         assert 'PROGRAM ENDED AT' in (d/'output.log').read_text(),key
         inp=(d/'input.inp').read_text()
         eps=re.search(r'EPS_FILTER\s+([\d.Ee+-]+)',inp)

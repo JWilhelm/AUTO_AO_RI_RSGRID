@@ -1,6 +1,6 @@
 # Figure 5(a–f): complete GW100
 
-This snapshot contains the exact 10,800 RI-RS calculations and 100 selected TensorGW references used in the GWP41 manuscript on 2026-10-03. Adenine is included. Each of the 108 parameter combinations contains all 100 molecules; HOMO and LUMO share the same calculation.
+This snapshot contains the outputs of the 10,800 RI-RS calculations and 100 selected TensorGW references used in the GWP41 manuscript on 2026-10-03. The inputs were adapted to the public CP2K `master` schema; `SHA256SUMS.json` checks the adapted files, while `Figure_1a/reproducibility/public_master_input_migration_20261017.csv` records their original hashes. The archived outputs belong to the original inputs at Git commit `768b14d59d5870e92a01ca9bcd544a9e3a9af84f`. Adenine is included. Each of the 108 parameter combinations contains all 100 molecules; HOMO and LUMO share the same calculation.
 
 | Panels | Cluster radius | Directory |
 |---|---|---|
