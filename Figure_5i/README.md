@@ -1,3 +1,3 @@
 # Figure 5i
 
-Current manuscript Figure 5(i): Si45H56 HOMO error at RI-RS radius 3 Å, aug-DZVP-MOLOPT-GTH-tier-2. The 36 `calculations/` contain input, normal CP2K output and orbital table. Historical campaign 148 used `EPS_FILTER=1e-7`; `TensorGW_reference/` is the matching original reference (HOMO/LUMO −7.194/−1.506 eV). These are intentionally distinct from the newer 5-Å series and its `EPS_FILTER=1e-12` reference.
+Current manuscript Figure 5(i): Si45H56 HOMO error at RI-RS radius 3 Å, aug-DZVP-MOLOPT-GTH-tier-2. The 36 `calculations/` contain input, normal CP2K output and orbital table. The calculations use `EPS_FILTER=1e-7`; `TensorGW_reference/` contains the matching reference (HOMO/LUMO −7.194/−1.506 eV).

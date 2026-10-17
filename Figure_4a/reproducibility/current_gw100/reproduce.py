@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify current Figure 4(a--f) from archived CP2K inputs and outputs."""
+"""Verify current Figure 4(a--f) from CP2K inputs and outputs."""
 import csv
 import hashlib
 import pathlib

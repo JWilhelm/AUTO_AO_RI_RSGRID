@@ -109,7 +109,7 @@ def calculate(repo: Path) -> list[dict]:
     for letter, (system, radius, orbital) in PANELS.items():
         panel_dir = repo / f"Figure_4{letter}"
         # The manuscript's updated GW100 runs live in current_eps12/;
-        # this legacy plotting workflow still checks the archived point set.
+        # the current panel calculations are checked against their references.
         actual_points = {p.name for p in panel_dir.iterdir() if p.is_dir() and p.name not in ("current_eps12", "reproducibility")}
         if actual_points != set(expected_points):
             raise RuntimeError(f"Figure_4{letter} point topology mismatch")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check all archived small-system SCF restarts against original input links."""
+"""Check all stored small-system SCF restarts against original input links."""
 import hashlib
 import json
 from pathlib import Path

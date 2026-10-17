@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write a local copy of one archived input with its asset paths relocated."""
+"""Write a local copy of one panel input with its asset paths relocated."""
 import argparse
 import re
 from pathlib import Path

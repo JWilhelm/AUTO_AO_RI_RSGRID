@@ -265,7 +265,7 @@ def main() -> None:
     png_path = output / "Figure_1_created.png"
     write_csv(csv_path, rows)
     plot(png_path, rows)
-    print(f"Read {len(rows)} values from the archived calculations")
+    print(f"Read {len(rows)} values from the panel calculations")
     print(f"Wrote {csv_path}")
     print(f"Wrote {png_path}")
 

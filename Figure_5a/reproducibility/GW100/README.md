@@ -26,4 +26,4 @@ The small-system SCF-WFN restart files are bundled under `Figure_1a/reproducibil
 
 ## Reproduce the published averages
 
-Run `python3 Analysis/reproduce.py` from this directory. It verifies all raw-file checksums, reads all 10,900 outputs, checks matched DFT energies and reproduces all 216 HOMO/LUMO aggregate rows against Analysis/aggregate.csv. Energies are evaluated at the precision printed by CP2K. Historical alternative and unstable references are not silently mixed into this snapshot.
+Run `python3 Analysis/reproduce.py` from this directory. It verifies all raw-file checksums, reads all 10,900 outputs, checks matched DFT energies and reproduces all 216 HOMO/LUMO aggregate rows against Analysis/aggregate.csv. Energies are evaluated at the precision printed by CP2K.

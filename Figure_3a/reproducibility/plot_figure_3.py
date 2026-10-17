@@ -288,7 +288,7 @@ def plot(path: Path, rows: list[dict]) -> None:
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=2, frameon=False)
     fig.text(0.5, 0.008, "GW100: optimized 100/100 per point; tabulated coverage 100, 100, 100, 100, 91, 89, 77/100.\n"
-             "GW100 optimized: RI neighbors 3 Å, RS/AO=7; tabulated: earlier grid setup. Silicon: atom-local RI.\n"
+             "GW100 optimized: RI neighbors 3 Å, RS/AO=7; tabulated: fixed grid setup. Silicon: atom-local RI.\n"
              "Horizontal axis: requested RI/AO for optimized bases; mean actual ratio for tabulated GW100.",
              ha="center", fontsize=9)
     fig.tight_layout(rect=(0, 0.065, 1, 0.965))

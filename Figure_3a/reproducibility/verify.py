@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check all 50 current Figure 3 coordinates from archived CP2K outputs."""
+"""Check all 50 current Figure 3 coordinates from CP2K outputs."""
 from pathlib import Path
 import re
 import sys
