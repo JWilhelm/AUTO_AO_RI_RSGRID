@@ -1,3 +1,3 @@
 # Figure 4i
 
-Current manuscript Figure 4(i). Raw CP2K input/output files are preserved directly in this folder. `Plot_Figure_4/plot_figure_4.py` reproduces the archived dataset; the reference and any filter differences are documented in the root README.
+Current manuscript Figure 4(i). Raw CP2K input/output files are preserved directly in this folder. `Figure_4g/reproducibility/plot_figure_4.py` reproduces the current panel data; the reference and any filter differences are documented in the root README.
