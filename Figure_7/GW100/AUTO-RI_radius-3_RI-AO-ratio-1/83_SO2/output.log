@@ -1,0 +1,967 @@
+ DBCSR| CPU Multiplication driver                                           XSMM (U)
+ DBCSR| Multrec recursion limit                                              512 (U)
+ DBCSR| Multiplication stack size                                           1000 (D)
+ DBCSR| Maximum elements for images                                    UNLIMITED (U)
+ DBCSR| Multiplicative factor virtual images                                   1 (U)
+ DBCSR| Use multiplication densification                                       T (D)
+ DBCSR| Multiplication size stacks                                             3 (U)
+ DBCSR| Use memory pool for CPU allocation                                     F (U)
+ DBCSR| Number of 3D layers                                               SINGLE (U)
+ DBCSR| Use MPI memory allocation                                              F (U)
+ DBCSR| Use RMA algorithm                                                      F (U)
+ DBCSR| Use Communication thread                                               T (U)
+ DBCSR| Communication thread load                                             30 (D)
+ DBCSR| MPI: My process id                                                     3
+ DBCSR| MPI: Number of processes                                               8
+ DBCSR| OMP: Current number of threads                                        16
+ DBCSR| OMP: Max number of threads                                            16
+ DBCSR| Split modifier for TAS multiplication algorithm                  1.0E+00 (U)
+
+
+  **** **** ******  **  PROGRAM STARTED AT               2026-09-18 13:19:42.833
+ ***** ** ***  *** **   PROGRAM STARTED ON                              n2cn1036
+ **    ****   ******    PROGRAM STARTED BY                              eprop2d1
+ ***** **    ** ** **   PROGRAM PROCESS ID                                343279
+  **** **  *******  **  PROGRAM STARTED IN /scratch/hpc-prf-metdyn/eprop2d1_Jan/
+                                           53_benchmark_RI_opt/139_Figure3_alpha
+                                           1_1p5_coopfst/calculations/83_SO2_rc3
+                                           _a1
+
+ CP2K| version string:                 CP2K version 2026.2 (Development Version)
+ CP2K| source code revision number:                                   d1dff42668
+ CP2K| cp2kflags: omp libint fftw3 libxc parallel scalapack mpi_f08 cosma libxs 
+ CP2K|            libxsmm spglib openblas libdftd4 s_dftd3 mctc-lib tblite libvo
+ CP2K|            ori libbqb
+ CP2K| is freely available from                            https://www.cp2k.org/
+ CP2K| Program compiled at                                   2026-09-18 06:02:26
+ CP2K| Program compiled on                                              n2login6
+ CP2K| Program compiled for                                               x86_64
+ CP2K| Data directory path    /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_benchmark_
+ CP2K| Input file name                                                 input.inp
+ 
+ eprop2d1@n2cn1036 has created rank and process                      0    343279
+ 
+ eprop2d1@n2cn1036 is running                                        1 processes
+
+ GLOBAL| Force Environment number                                              1
+ GLOBAL| Basis set file name            /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_
+ GLOBAL| Potential file name            /scratch/hpc-prf-metdyn/eprop2d1_Jan/53_
+ GLOBAL| MM Potential file name                                     MM_POTENTIAL
+ GLOBAL| Coordinate file name                                      __STD_INPUT__
+ GLOBAL| Method name                                                        CP2K
+ GLOBAL| Project name                                           f3_83_so2_rc3_a1
+ GLOBAL| Run type                                                         ENERGY
+ GLOBAL| FFT library                                                       FFTW3
+ GLOBAL| Diagonalization library                                       ScaLAPACK
+ GLOBAL| Cholesky decomposition library                                ScaLAPACK
+ GLOBAL| DGEMM library                                                      BLAS
+ GLOBAL| Direct generalized diagonalization requested                          F
+ GLOBAL| Orthonormality check for eigenvectors                          DISABLED
+ GLOBAL| Matrix multiplication library                                     COSMA
+ GLOBAL| All-to-all communication in single precision                          F
+ GLOBAL| Grid backend                                                       AUTO
+ GLOBAL| Global print level                                                  LOW
+ GLOBAL| MPI I/O enabled                                                       T
+ GLOBAL| Total number of message passing processes                             1
+ GLOBAL| Number of distributed systems (nodes)                                 1
+ GLOBAL| Number of threads for this process                                   16
+ GLOBAL| This output is from process                                           0
+ GLOBAL| OpenMP stack size per thread (OMP_STACKSIZE)                       128M
+ GLOBAL| CPU model name                          AMD EPYC 7763 64-Core Processor
+ GLOBAL| CPUID                                                              1002
+ GLOBAL| Compiled for CPUID                                                    0
+
+ *** HINT in environment.F:968 :: The compiler target (generic) used to ***
+ *** build this binary does not enable all instruction-set extensions   ***
+ *** available on this CPU (x86_avx2). Consider reconfiguring and       ***
+ *** rebuilding CP2K for this target system to enable them.             ***
+
+
+ MEMORY| system memory details [Kb]
+ MEMORY|                        rank 0           min           max       average
+ MEMORY| MemTotal            263897600     263897600     263897600     263897600
+ MEMORY| MemFree             251059808     251059808     251059808     251059808
+ MEMORY| Buffers                381736        381736        381736        381736
+ MEMORY| Cached                6960148       6960148       6960148       6960148
+ MEMORY| Slab                  1217636       1217636       1217636       1217636
+ MEMORY| SReclaimable           228996        228996        228996        228996
+ MEMORY| MemLikelyFree       258630688     258630688     258630688     258630688
+
+
+ GENERATE|  Preliminary Number of Bonds generated:                             0
+ GENERATE|  Achieved consistency in connectivity generation.
+
+ *******************************************************************************
+ *******************************************************************************
+ **                                                                           **
+ **     #####                         ##              ##                      **
+ **    ##   ##            ##          ##              ##                      **
+ **   ##     ##                       ##            ######                    **
+ **   ##     ##  ##   ##  ##   #####  ##  ##   ####   ##    #####    #####    **
+ **   ##     ##  ##   ##  ##  ##      ## ##   ##      ##   ##   ##  ##   ##   **
+ **   ##  ## ##  ##   ##  ##  ##      ####     ###    ##   ######   ######    **
+ **    ##  ###   ##   ##  ##  ##      ## ##      ##   ##   ##       ##        **
+ **     #######   #####   ##   #####  ##  ##  ####    ##    #####   ##        **
+ **           ##                                                    ##        **
+ **                                                                           **
+ **                                                ... make the atoms dance   **
+ **                                                                           **
+ **            Copyright (C) by CP2K developers group (2000-2026)             **
+ **                      J. Chem. Phys. 152, 194103 (2020)                    **
+ **                                                                           **
+ *******************************************************************************
+
+
+ TOTAL NUMBERS AND MAXIMUM NUMBERS
+
+  Total number of            - Atomic kinds:                                   2
+                             - Atoms:                                          3
+                             - Shell sets:                                     3
+                             - Shells:                                        15
+                             - Primitive Cartesian functions:                 18
+                             - Cartesian basis functions:                     42
+                             - Spherical basis functions:                     39
+
+  Maximum angular momentum of- Orbital basis functions:                        2
+                             - Local part of the GTH pseudopotential:          2
+                             - Non-local part of the GTH pseudopotential:      2
+
+
+ SCF PARAMETERS         Density guess:                                    ATOMIC
+                        --------------------------------------------------------
+                        max_scf:                                             500
+                        max_scf_history:                                       0
+                        max_diis:                                              4
+                        --------------------------------------------------------
+                        eps_scf:                                        1.00E-08
+                        eps_scf_history:                                0.00E+00
+                        eps_diis:                                       0.00E+00
+                        eps_eigval:                                     1.00E-05
+                        --------------------------------------------------------
+                        level_shift [a.u.]:                             0.000000
+                        --------------------------------------------------------
+                        Outer loop SCF in use 
+                        No variables optimised in outer loop
+                        eps_scf                                         1.00E-08
+                        max_scf                                               20
+                        No outer loop optimization
+                        step_size                                       5.00E-01
+
+ Extrapolation method: initial_guess
+
+ Number of electrons:                                                         18
+ Number of occupied orbitals:                                                  9
+ Number of molecular orbitals:                                                 9
+
+ Number of orbital functions:                                                 39
+ Number of independent orbital functions:                                     39
+
+
+ SCF WAVEFUNCTION OPTIMIZATION
+
+  ----------------------------------- OT ---------------------------------------
+  Minimizer      : DIIS                : direct inversion
+                                         in the iterative subspace
+                                         using   7 DIIS vectors
+                                         safer DIIS on
+  Preconditioner : FULL_KINETIC        : inversion of T + eS
+  Lattice FFT   : OFF
+  Precond_solver : DEFAULT
+  stepsize       :    0.15000000                  energy_gap     :    0.20000000
+  eps_taylor     :   0.10000E-15                  max_taylor     :             4
+  ----------------------------------- OT ---------------------------------------
+
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+  Decoupling Energy:                                               0.0005649024
+     1 OT DIIS     0.15E+00    5.7     0.13847204       -40.6128883738 -4.06E+01
+  Decoupling Energy:                                               0.0001794231
+     2 OT DIIS     0.15E+00    6.8     0.06954831       -41.2638462844 -6.51E-01
+  Decoupling Energy:                                               0.0000875315
+     3 OT DIIS     0.15E+00    6.8     0.04841433       -41.4659836326 -2.02E-01
+  Decoupling Energy:                                               0.0000495573
+     4 OT DIIS     0.15E+00    6.9     0.03524495       -41.5879721358 -1.22E-01
+  Decoupling Energy:                                               0.0000343199
+     5 OT DIIS     0.15E+00    6.9     0.02645745       -41.6763650548 -8.84E-02
+  Decoupling Energy:                                               0.0000266642
+     6 OT DIIS     0.15E+00    6.8     0.01969078       -41.7546657513 -7.83E-02
+  Decoupling Energy:                                               0.0000260580
+     7 OT DIIS     0.15E+00    6.8     0.01628436       -41.8020410787 -4.74E-02
+  Decoupling Energy:                                               0.0000269148
+     8 OT DIIS     0.15E+00    6.8     0.01429907       -41.8358169715 -3.38E-02
+  Decoupling Energy:                                               0.0000284075
+     9 OT DIIS     0.15E+00    6.8     0.01344524       -41.8611896409 -2.54E-02
+  Decoupling Energy:                                               0.0000298306
+    10 OT DIIS     0.15E+00    6.8     0.01303263       -41.8873078109 -2.61E-02
+  Decoupling Energy:                                               0.0000305700
+    11 OT DIIS     0.15E+00    6.9     0.01291473       -41.9024791756 -1.52E-02
+  Decoupling Energy:                                               0.0000312835
+    12 OT DIIS     0.15E+00    6.8     0.01285203       -41.9170146715 -1.45E-02
+  Decoupling Energy:                                               0.0000320346
+    13 OT DIIS     0.15E+00    6.8     0.01280373       -41.9307831846 -1.38E-02
+  Decoupling Energy:                                               0.0000326751
+    14 OT DIIS     0.15E+00    6.8     0.01266389       -41.9473713318 -1.66E-02
+  Decoupling Energy:                                               0.0000345279
+    15 OT DIIS     0.15E+00    6.9     0.01161790       -42.0010194725 -5.36E-02
+  Decoupling Energy:                                               0.0000361061
+    16 OT DIIS     0.15E+00    6.8     0.01037993       -42.0353645708 -3.43E-02
+  Decoupling Energy:                                               0.0000376155
+    17 OT DIIS     0.15E+00    6.8     0.00777240       -42.0822248849 -4.69E-02
+  Decoupling Energy:                                               0.0000387814
+    18 OT DIIS     0.15E+00    6.8     0.00724122       -42.0843948865 -2.17E-03
+  Decoupling Energy:                                               0.0000387953
+    19 OT DIIS     0.15E+00    6.8     0.00556604       -42.1013570017 -1.70E-02
+  Decoupling Energy:                                               0.0000401339
+    20 OT DIIS     0.15E+00    6.8     0.00596162       -42.0993990866  1.96E-03
+  Decoupling Energy:                                               0.0000397116
+    21 OT DIIS     0.15E+00    6.8     0.00356577       -42.1108273714 -1.14E-02
+  Decoupling Energy:                                               0.0000396862
+    22 OT DIIS     0.15E+00    6.8     0.00303215       -42.1145713843 -3.74E-03
+  Decoupling Energy:                                               0.0000405491
+    23 OT DIIS     0.15E+00    6.9     0.00202094       -42.1155928840 -1.02E-03
+  Decoupling Energy:                                               0.0000406430
+    24 OT DIIS     0.15E+00    6.8     0.00159090       -42.1165152708 -9.22E-04
+  Decoupling Energy:                                               0.0000408377
+    25 OT DIIS     0.15E+00    6.8     0.00131594       -42.1170239412 -5.09E-04
+  Decoupling Energy:                                               0.0000409650
+    26 OT DIIS     0.15E+00    6.8     0.00113990       -42.1173095863 -2.86E-04
+  Decoupling Energy:                                               0.0000409645
+    27 OT DIIS     0.15E+00    6.9     0.00100036       -42.1175513838 -2.42E-04
+  Decoupling Energy:                                               0.0000408686
+    28 OT DIIS     0.15E+00    6.8     0.00084682       -42.1177829106 -2.32E-04
+  Decoupling Energy:                                               0.0000407424
+    29 OT DIIS     0.15E+00    6.9     0.00069080       -42.1179713008 -1.88E-04
+  Decoupling Energy:                                               0.0000407103
+    30 OT DIIS     0.15E+00    6.8     0.00055917       -42.1181014531 -1.30E-04
+  Decoupling Energy:                                               0.0000407197
+    31 OT DIIS     0.15E+00    6.8     0.00045214       -42.1181789799 -7.75E-05
+  Decoupling Energy:                                               0.0000407354
+    32 OT DIIS     0.15E+00    6.9     0.00035943       -42.1182278424 -4.89E-05
+  Decoupling Energy:                                               0.0000407534
+    33 OT DIIS     0.15E+00    6.8     0.00027001       -42.1182594178 -3.16E-05
+  Decoupling Energy:                                               0.0000407511
+    34 OT DIIS     0.15E+00    6.9     0.00023668       -42.1182688618 -9.44E-06
+  Decoupling Energy:                                               0.0000407337
+    35 OT DIIS     0.15E+00    6.9     0.00020856       -42.1182776043 -8.74E-06
+  Decoupling Energy:                                               0.0000407167
+    36 OT DIIS     0.15E+00    6.9     0.00018342       -42.1182853226 -7.72E-06
+  Decoupling Energy:                                               0.0000406993
+    37 OT DIIS     0.15E+00    6.8     0.00016175       -42.1182912710 -5.95E-06
+  Decoupling Energy:                                               0.0000406906
+    38 OT DIIS     0.15E+00    6.9     0.00013046       -42.1182982403 -6.97E-06
+  Decoupling Energy:                                               0.0000406932
+    39 OT DIIS     0.15E+00    6.8     0.00011341       -42.1183012359 -3.00E-06
+  Decoupling Energy:                                               0.0000406964
+    40 OT DIIS     0.15E+00    6.8     0.00010257       -42.1183027462 -1.51E-06
+  Decoupling Energy:                                               0.0000407007
+    41 OT DIIS     0.15E+00    6.8     0.00008806       -42.1183044720 -1.73E-06
+  Decoupling Energy:                                               0.0000406980
+    42 OT DIIS     0.15E+00    6.8     0.00007628       -42.1183056315 -1.16E-06
+  Decoupling Energy:                                               0.0000406882
+    43 OT DIIS     0.15E+00    7.0     0.00006251       -42.1183066725 -1.04E-06
+  Decoupling Energy:                                               0.0000406783
+    44 OT DIIS     0.15E+00    6.8     0.00005261       -42.1183072344 -5.62E-07
+  Decoupling Energy:                                               0.0000406700
+    45 OT DIIS     0.15E+00    6.8     0.00004478       -42.1183075749 -3.41E-07
+  Decoupling Energy:                                               0.0000406650
+    46 OT DIIS     0.15E+00    6.8     0.00003649       -42.1183078344 -2.59E-07
+  Decoupling Energy:                                               0.0000406662
+    47 OT DIIS     0.15E+00    6.9     0.00003275       -42.1183079529 -1.19E-07
+  Decoupling Energy:                                               0.0000406683
+    48 OT DIIS     0.15E+00    6.9     0.00003036       -42.1183080326 -7.97E-08
+  Decoupling Energy:                                               0.0000406710
+    49 OT DIIS     0.15E+00    6.8     0.00002759       -42.1183081484 -1.16E-07
+  Decoupling Energy:                                               0.0000406717
+    50 OT DIIS     0.15E+00    6.8     0.00002553       -42.1183082421 -9.37E-08
+  Decoupling Energy:                                               0.0000406709
+    51 OT DIIS     0.15E+00    6.8     0.00002328       -42.1183083440 -1.02E-07
+  Decoupling Energy:                                               0.0000406696
+    52 OT DIIS     0.15E+00    6.8     0.00002145       -42.1183084304 -8.64E-08
+  Decoupling Energy:                                               0.0000406683
+    53 OT DIIS     0.15E+00    6.9     0.00001987       -42.1183085022 -7.18E-08
+  Decoupling Energy:                                               0.0000406683
+    54 OT DIIS     0.15E+00    6.8     0.00001794       -42.1183085813 -7.90E-08
+  Decoupling Energy:                                               0.0000406698
+    55 OT DIIS     0.15E+00    6.9     0.00001610       -42.1183086501 -6.88E-08
+  Decoupling Energy:                                               0.0000406719
+    56 OT DIIS     0.15E+00    6.9     0.00001426       -42.1183087088 -5.87E-08
+  Decoupling Energy:                                               0.0000406743
+    57 OT DIIS     0.15E+00    6.8     0.00001197       -42.1183087681 -5.92E-08
+  Decoupling Energy:                                               0.0000406752
+    58 OT DIIS     0.15E+00    6.8     0.00001019       -42.1183088010 -3.29E-08
+  Decoupling Energy:                                               0.0000406752
+    59 OT DIIS     0.15E+00    6.8     0.00000856       -42.1183088221 -2.11E-08
+  Decoupling Energy:                                               0.0000406748
+    60 OT DIIS     0.15E+00    6.8     0.00000743       -42.1183088323 -1.02E-08
+  Decoupling Energy:                                               0.0000406745
+    61 OT DIIS     0.15E+00    6.8     0.00000673       -42.1183088370 -4.67E-09
+  Decoupling Energy:                                               0.0000406746
+    62 OT DIIS     0.15E+00    6.8     0.00000606       -42.1183088409 -3.90E-09
+  Decoupling Energy:                                               0.0000406750
+    63 OT DIIS     0.15E+00    6.8     0.00000535       -42.1183088450 -4.14E-09
+  Decoupling Energy:                                               0.0000406755
+    64 OT DIIS     0.15E+00    6.9     0.00000476       -42.1183088477 -2.73E-09
+  Decoupling Energy:                                               0.0000406759
+    65 OT DIIS     0.15E+00    6.8     0.00000421       -42.1183088501 -2.40E-09
+  Decoupling Energy:                                               0.0000406759
+    66 OT DIIS     0.15E+00    6.8     0.00000380       -42.1183088519 -1.79E-09
+  Decoupling Energy:                                               0.0000406758
+    67 OT DIIS     0.15E+00    6.9     0.00000344       -42.1183088534 -1.48E-09
+  Decoupling Energy:                                               0.0000406755
+    68 OT DIIS     0.15E+00    6.8     0.00000313       -42.1183088549 -1.47E-09
+  Decoupling Energy:                                               0.0000406754
+    69 OT DIIS     0.15E+00    6.8     0.00000291       -42.1183088560 -1.15E-09
+  Decoupling Energy:                                               0.0000406753
+    70 OT DIIS     0.15E+00    6.8     0.00000266       -42.1183088573 -1.31E-09
+  Decoupling Energy:                                               0.0000406754
+    71 OT DIIS     0.15E+00    6.8     0.00000238       -42.1183088588 -1.47E-09
+  Decoupling Energy:                                               0.0000406755
+    72 OT DIIS     0.15E+00    6.9     0.00000218       -42.1183088598 -9.90E-10
+  Decoupling Energy:                                               0.0000406756
+    73 OT DIIS     0.15E+00    6.8     0.00000201       -42.1183088607 -8.58E-10
+  Decoupling Energy:                                               0.0000406755
+    74 OT DIIS     0.15E+00    6.8     0.00000186       -42.1183088613 -6.73E-10
+  Decoupling Energy:                                               0.0000406754
+    75 OT DIIS     0.15E+00    6.9     0.00000173       -42.1183088619 -5.66E-10
+  Decoupling Energy:                                               0.0000406753
+    76 OT DIIS     0.15E+00    6.8     0.00000157       -42.1183088625 -6.02E-10
+  Decoupling Energy:                                               0.0000406753
+    77 OT DIIS     0.15E+00    6.8     0.00000140       -42.1183088630 -5.16E-10
+  Decoupling Energy:                                               0.0000406753
+    78 OT DIIS     0.15E+00    6.8     0.00000121       -42.1183088635 -4.86E-10
+  Decoupling Energy:                                               0.0000406753
+    79 OT DIIS     0.15E+00    6.8     0.00000101       -42.1183088638 -3.40E-10
+  Decoupling Energy:                                               0.0000406754
+    80 OT DIIS     0.15E+00    6.8     0.00000087       -42.1183088640 -1.55E-10
+  Decoupling Energy:                                               0.0000406754
+    81 OT DIIS     0.15E+00    6.8     0.00000075       -42.1183088641 -8.69E-11
+  Decoupling Energy:                                               0.0000406754
+    82 OT DIIS     0.15E+00    6.8     0.00000067       -42.1183088641 -4.97E-11
+  Decoupling Energy:                                               0.0000406753
+    83 OT DIIS     0.15E+00    6.8     0.00000061       -42.1183088642 -3.20E-11
+  Decoupling Energy:                                               0.0000406753
+    84 OT DIIS     0.15E+00    6.9     0.00000054       -42.1183088642 -3.50E-11
+  Decoupling Energy:                                               0.0000406753
+    85 OT DIIS     0.15E+00    6.8     0.00000049       -42.1183088642 -2.31E-11
+  Decoupling Energy:                                               0.0000406753
+    86 OT DIIS     0.15E+00    6.8     0.00000045       -42.1183088642 -1.60E-11
+  Decoupling Energy:                                               0.0000406753
+    87 OT DIIS     0.15E+00    6.8     0.00000041       -42.1183088642 -1.49E-11
+  Decoupling Energy:                                               0.0000406753
+    88 OT DIIS     0.15E+00    7.9     0.00000038       -42.1183088643 -1.37E-11
+  Decoupling Energy:                                               0.0000406753
+    89 OT DIIS     0.15E+00    6.8     0.00000036       -42.1183088643 -1.53E-11
+  Decoupling Energy:                                               0.0000406753
+    90 OT DIIS     0.15E+00    6.8     0.00000033       -42.1183088643 -1.74E-11
+  Decoupling Energy:                                               0.0000406753
+    91 OT DIIS     0.15E+00    6.9     0.00000031       -42.1183088643 -1.81E-11
+  Decoupling Energy:                                               0.0000406753
+    92 OT DIIS     0.15E+00    6.8     0.00000027       -42.1183088643 -2.38E-11
+  Decoupling Energy:                                               0.0000406753
+    93 OT DIIS     0.15E+00    6.8     0.00000025       -42.1183088644 -1.58E-11
+  Decoupling Energy:                                               0.0000406753
+    94 OT DIIS     0.15E+00    6.8     0.00000023       -42.1183088644 -1.19E-11
+  Decoupling Energy:                                               0.0000406753
+    95 OT DIIS     0.15E+00    6.9     0.00000021       -42.1183088644 -1.08E-11
+  Decoupling Energy:                                               0.0000406753
+    96 OT DIIS     0.15E+00    6.8     0.00000019       -42.1183088644 -7.40E-12
+  Decoupling Energy:                                               0.0000406753
+    97 OT DIIS     0.15E+00    6.8     0.00000018       -42.1183088644 -6.93E-12
+  Decoupling Energy:                                               0.0000406753
+    98 OT DIIS     0.15E+00    6.8     0.00000016       -42.1183088644 -7.02E-12
+  Decoupling Energy:                                               0.0000406753
+    99 OT DIIS     0.15E+00    6.8     0.00000014       -42.1183088644 -5.37E-12
+  Decoupling Energy:                                               0.0000406753
+   100 OT DIIS     0.15E+00    6.8     0.00000012       -42.1183088644 -4.16E-12
+  Decoupling Energy:                                               0.0000406753
+   101 OT DIIS     0.15E+00    6.8     0.00000011       -42.1183088644 -1.92E-12
+  Decoupling Energy:                                               0.0000406753
+   102 OT DIIS     0.15E+00    6.8     0.00000009       -42.1183088644 -1.21E-12
+  Decoupling Energy:                                               0.0000406753
+   103 OT DIIS     0.15E+00    6.8     0.00000008       -42.1183088644 -9.88E-13
+  Decoupling Energy:                                               0.0000406753
+   104 OT DIIS     0.15E+00    6.8     0.00000007       -42.1183088644 -6.39E-13
+  Decoupling Energy:                                               0.0000406753
+   105 OT DIIS     0.15E+00    6.8     0.00000007       -42.1183088644 -5.61E-13
+  Decoupling Energy:                                               0.0000406753
+   106 OT DIIS     0.15E+00    6.8     0.00000006       -42.1183088644 -4.97E-13
+  Decoupling Energy:                                               0.0000406753
+   107 OT DIIS     0.15E+00    6.8     0.00000005       -42.1183088644 -2.13E-13
+  Decoupling Energy:                                               0.0000406753
+   108 OT DIIS     0.15E+00    6.8     0.00000005       -42.1183088644 -1.71E-13
+  Decoupling Energy:                                               0.0000406753
+   109 OT DIIS     0.15E+00    6.8     0.00000004       -42.1183088644 -1.49E-13
+  Decoupling Energy:                                               0.0000406753
+   110 OT DIIS     0.15E+00    6.8     0.00000004       -42.1183088644 -1.35E-13
+  Decoupling Energy:                                               0.0000406753
+   111 OT DIIS     0.15E+00    6.9     0.00000004       -42.1183088644 -2.20E-13
+  Decoupling Energy:                                               0.0000406753
+   112 OT DIIS     0.15E+00    6.8     0.00000004       -42.1183088644 -1.85E-13
+  Decoupling Energy:                                               0.0000406753
+   113 OT DIIS     0.15E+00    6.9     0.00000003       -42.1183088644 -2.84E-13
+  Decoupling Energy:                                               0.0000406753
+   114 OT DIIS     0.15E+00    6.9     0.00000003       -42.1183088644 -2.49E-13
+  Decoupling Energy:                                               0.0000406753
+   115 OT DIIS     0.15E+00    6.8     0.00000003       -42.1183088644 -1.85E-13
+  Decoupling Energy:                                               0.0000406753
+   116 OT DIIS     0.15E+00    6.8     0.00000003       -42.1183088644 -1.28E-13
+  Decoupling Energy:                                               0.0000406753
+   117 OT DIIS     0.15E+00    6.8     0.00000002       -42.1183088644 -1.07E-13
+  Decoupling Energy:                                               0.0000406753
+   118 OT DIIS     0.15E+00    6.8     0.00000002       -42.1183088644 -1.28E-13
+  Decoupling Energy:                                               0.0000406753
+   119 OT DIIS     0.15E+00    6.8     0.00000002       -42.1183088644 -9.24E-14
+  Decoupling Energy:                                               0.0000406753
+   120 OT DIIS     0.15E+00    6.8     0.00000002       -42.1183088644 -5.68E-14
+  Decoupling Energy:                                               0.0000406753
+   121 OT DIIS     0.15E+00    6.8     0.00000002       -42.1183088644 -9.95E-14
+  Decoupling Energy:                                               0.0000406753
+   122 OT DIIS     0.15E+00    6.8     0.00000001       -42.1183088644 -1.42E-14
+  Decoupling Energy:                                               0.0000406753
+   123 OT DIIS     0.15E+00    6.8     0.00000001       -42.1183088644 -1.42E-14
+  Decoupling Energy:                                               0.0000406753
+   124 OT DIIS     0.15E+00    6.8     0.00000001       -42.1183088644 -4.97E-14
+  Decoupling Energy:                                               0.0000406753
+   125 OT DIIS     0.15E+00    6.8     0.00000001       -42.1183088644 -4.26E-14
+  Decoupling Energy:                                               0.0000406753
+   126 OT DIIS     0.15E+00    6.8     9.3882E-09       -42.1183088644 -7.11E-15
+
+  *** SCF run converged in   126 steps ***
+
+
+  Electronic density on regular grids:        -18.0000000000        0.0000000000
+  Core density on regular grids:               18.0000000000       -0.0000000000
+  Total charge density on r-space grids:       -0.0000000000
+  Total charge density g-space grids:          -0.0000000000
+
+  Overlap energy of the core charge distribution:               0.00000070530808
+  Self energy of the core charge distribution:               -107.23196773861588
+  Core Hamiltonian energy:                                     29.11887416776637
+  Hartree energy:                                              45.17450676174841
+  Exchange-correlation energy:                                 -9.17972276062089
+
+  Total energy:                                               -42.11830886441392
+
+  outer SCF iter =    1 RMS gradient =   0.94E-08 energy =        -42.1183088644
+  outer SCF loop converged in   1 iterations or  126 steps
+
+  
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                          BANDSTRUCTURE CALCULATION                          -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+  
+ Number of occupied molecular orbitals (MOs) = Number of occupied bands        9
+ Number of unoccupied (= virtual) MOs = Number of unoccupied bands            30
+ Number of Gaussian basis functions for MOs                                   39
+  
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                GW CALCULATION                               -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+  
+ Input: Number of time/freq. points                                           30
+ Input: ω_max for fitting Σ(iω) (eV)                                        10.0
+ Input: Filter threshold for sparse tensor operations                    1.0E-07
+ Input: Apply Hedin shift                                                      F
+ Detected: Available memory per MPI process                             166.7 GB
+ 
+ Input: RI-RS Tikhonov regularization                                   1.00E-04
+ Input: AO grid hard cutoff radius                                        8.00 Å
+ Input: MPI ranks per atom in Z_lP solve                                      -1
+ Input: Keep sparsity in χ/G/W panels                                          T
+ Input: GW flavour                                                          G0W0
+ 
+ Input: RI-RS grid optimization activated                                      T
+ Input: RS points per AO function                                            7.0
+ Input: Cutoff radius for atomic clusters                                  3.0 Å
+ Input: Maximum grid optimization iterations                                 300
+ 
+ Input: AUTO_RI basis optimization activated:                                  T
+ Input: AUTO_RI number of RI functions per AO function:                      1.0
+ Input: AUTO_RI frontier orbital window:                                  5.0 eV
+ Input: AUTO_RI neighbor radius:                                           3.0 Å
+ 
+ Cutoff radius for the truncated Coulomb operator in RI metric:            7.0 Å
+ Regularization parameter of RI                                          0.0E+00
+ Regularization parameter of minimax grids                               1.0E-06
+ 
+ AUTO_RI| Number of automatic RI functions for χ, ε, W:                       39
+ AUTO_RI| Total RI basis optimization time:                                0.8 s
+  Decoupling Energy:                                               0.0000406753
+ 
+ SCF direct band gap (eV)                                                   3.54
+ Max. SCF eigval diff. (eV)                                                96.72
+ E-Range for minimax grid                                                  27.32
+ Number of Padé parameters for analytic continuation:                         16
+ 
+ RI-RS basis radii (Å):
+     Kind  Elem     r_AO (Å)     r_RI (Å)
+        1    S         7.9973        5.0580
+        2    O         7.0817        4.4789
+ 
+ Started RI-RS grid optimization
+ RI-RS grid initial normalized error                          1.102883839770E-04
+ RI-RS grid optimization completed, execution time:                        6.7 s
+ Normalized 3C error:                                                    3.7E-08
+ Maximum absolute 3C error:                                              4.4E-04
+ Optimized points outside molecular Voronoi cells:                            17 / 273
+ Total grid points used for RI-RS:                                           273
+ 
+ RI-RS grid row-blocks of ϕ_μ(r_l)                                             9
+ RI-RS grid points per block (max)                                            32
+ 
+ Percentage of non-zero matrix elements in ϕ_μ(r_l)                     100.00 %
+ 
+ RI-RS memory estimate per MPI process:
+   Available memory per process (system)                               207.04 GB
+   Required for Z_lP (dense upper bound; actual is sparser)              0.00 GB
+   Required for χ, W, Σ panels (peak per panel step)                     0.00 GB
+   Required for Z_lP solve peak (D_local+ϕ, worst-case atom)             0.00 GB
+   Worst-case local-grid number of grid points:                              273
+   Worst-case memory D_local:                                            0.00 GB
+ 
+ Started computing Z_lP
+ Computed Z_lP (MPI rank 0) for atom          1 /  3,    Execution time    0.0 s
+ Computed Z_lP (MPI rank 0) for atom          2 /  3,    Execution time    0.0 s
+ Computed Z_lP (MPI rank 0) for atom          3 /  3,    Execution time    0.0 s
+ Computed Z_lP (all MPI ranks) for all atoms,            Execution time    0.1 s
+
+ Memory per MPI process after computing Z_lP:
+ Available memory per MPI process                              207.0 GB
+ Used memory per MPI process                                     0.7 GB
+ Number of batches for χ, Σ matrices                                           1
+ 
+ Percentage of non-zero matrix elements in Z_lP                         100.00 %
+ Percentage of non-zero matrix elements in G_ll', χ_ll', W_ll'          100.00 %
+ Percentage of non-zero matrix elements in χ_PQ for time point 1        100.00 %
+ 
+ Computed χ(iτ,k=0) for time point            1 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            2 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            3 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            4 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            5 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            6 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            7 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            8 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point            9 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           10 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           11 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           12 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           13 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           14 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           15 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           16 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           17 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           18 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           19 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           20 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           21 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           22 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           23 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           24 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           25 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           26 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           27 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           28 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           29 / 30,    Execution time    0.0 s
+ Computed χ(iτ,k=0) for time point           30 / 30,    Execution time    0.0 s
+ 
+ Computed W(iτ),                                         Execution time    0.0 s
+ 
+ Computed Σ^x(k=0),                                      Execution time    0.0 s
+ 
+ Computed Σ^c(iτ) for time point              1 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              2 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              3 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              4 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              5 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              6 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              7 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              8 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point              9 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             10 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             11 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             12 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             13 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             14 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             15 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             16 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             17 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             18 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             19 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             20 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             21 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             22 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             23 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             24 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             25 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             26 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             27 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             28 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             29 / 30,    Execution time    0.0 s
+ Computed Σ^c(iτ) for time point             30 / 30,    Execution time    0.0 s
+ 
+ SCF valence band maximum (eV):                                           -8.651
+ SCF conduction band minimum (eV):                                        -5.111
+ SCF indirect band gap (eV):                                               3.540
+ SCF direct band gap (eV):                                                 3.540
+ 
+ G0W0 valence band maximum (eV):                                         -11.227
+ G0W0 conduction band minimum (eV):                                       -0.431
+ G0W0 indirect band gap (eV):                                             10.796
+ G0W0 direct band gap (eV):                                               10.796
+ 
+ Hartree-Fock with SCF orbitals valence band maximum (eV):               -13.203
+ Hartree-Fock with SCF orbitals conduction band minimum (eV)              -0.044
+ Hartree-Fock with SCF orbitals indirect band gap (eV):                   13.159
+ Hartree-Fock with SCF orbitals direct band gap (eV):                     13.159
+
+ ENERGY| Total FORCE_EVAL ( QS ) energy [hartree]            -42.118308864413919
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                DBCSR STATISTICS                             -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ COUNTER                                    TOTAL       BLAS       SMM       ACC
+ flops    27 x    27 x    12               157464     100.0%      0.0%      0.0%     
+ flops    32 x    27 x    12               373248     100.0%      0.0%      0.0%     
+ flops    27 x    32 x    12               373248     100.0%      0.0%      0.0%     
+ flops    27 x    12 x    12               396576     100.0%      0.0%      0.0%     
+ flops    12 x    12 x    27               396576     100.0%      0.0%      0.0%     
+ flops    13 x    12 x    27               429624     100.0%      0.0%      0.0%     
+ flops    27 x    12 x    13               429624     100.0%      0.0%      0.0%     
+ flops    27 x    13 x    12               429624     100.0%      0.0%      0.0%     
+ flops    12 x    13 x    27               429624     100.0%      0.0%      0.0%     
+ flops    27 x    12 x    14               435456     100.0%      0.0%      0.0%     
+ flops    27 x    14 x    12               435456     100.0%      0.0%      0.0%     
+ flops    14 x    12 x    27               462672     100.0%      0.0%      0.0%     
+ flops    12 x    14 x    27               462672     100.0%      0.0%      0.0%     
+ flops    27 x    13 x    14               471744     100.0%      0.0%      0.0%     
+ flops    27 x    14 x    13               471744     100.0%      0.0%      0.0%     
+ flops    14 x    13 x    27               501228     100.0%      0.0%      0.0%     
+ flops    13 x    14 x    27               501228     100.0%      0.0%      0.0%     
+ flops    27 x    14 x    14               508032     100.0%      0.0%      0.0%     
+ flops    14 x    14 x    27               539784     100.0%      0.0%      0.0%     
+ flops    32 x    32 x    12               884736     100.0%      0.0%      0.0%     
+ flops    32 x    12 x    12               940032     100.0%      0.0%      0.0%     
+ flops    12 x    12 x    32               940032     100.0%      0.0%      0.0%     
+ flops    32 x    12 x    13              1018368     100.0%      0.0%      0.0%     
+ flops    32 x    13 x    12              1018368     100.0%      0.0%      0.0%     
+ flops    13 x    12 x    32              1018368     100.0%      0.0%      0.0%     
+ flops    12 x    13 x    32              1018368     100.0%      0.0%      0.0%     
+ flops    32 x    12 x    14              1032192     100.0%      0.0%      0.0%     
+ flops    32 x    14 x    12              1032192     100.0%      0.0%      0.0%     
+ flops    14 x    12 x    32              1096704     100.0%      0.0%      0.0%     
+ flops    12 x    14 x    32              1096704     100.0%      0.0%      0.0%     
+ flops    32 x    13 x    14              1118208     100.0%      0.0%      0.0%     
+ flops    32 x    14 x    13              1118208     100.0%      0.0%      0.0%     
+ flops    14 x    13 x    32              1188096     100.0%      0.0%      0.0%     
+ flops    13 x    14 x    32              1188096     100.0%      0.0%      0.0%     
+ flops    32 x    14 x    14              1204224     100.0%      0.0%      0.0%     
+ flops    14 x    14 x    32              1279488     100.0%      0.0%      0.0%     
+ flops     9 x     9 x     9              1644624     100.0%      0.0%      0.0%     
+ flops    13 x    13 x     9              2318004     100.0%      0.0%      0.0%     
+ flops    27 x    12 x    27              2834352     100.0%      0.0%      0.0%     
+ flops     9 x     9 x    39              3177954     100.0%      0.0%      0.0%     
+ flops    27 x    14 x    27              3306744     100.0%      0.0%      0.0%     
+ flops    13 x     9 x    39              3477006     100.0%      0.0%      0.0%     
+ flops    13 x     9 x     9              3974022     100.0%      0.0%      0.0%     
+ flops    32 x    12 x    27              6718464     100.0%      0.0%      0.0%     
+ flops    27 x    12 x    32              6718464     100.0%      0.0%      0.0%     
+ flops    13 x     9 x    13              7227792     100.0%      0.0%      0.0%     
+ flops    13 x    13 x    27              7227792     100.0%      0.0%      0.0%     
+ flops    32 x    14 x    27              7838208     100.0%      0.0%      0.0%     
+ flops    27 x    14 x    32              7838208     100.0%      0.0%      0.0%     
+ flops    32 x    12 x    32             15925248     100.0%      0.0%      0.0%     
+ flops    13 x    13 x    32             17294784     100.0%      0.0%      0.0%     
+ flops    27 x    13 x    27             17589312     100.0%      0.0%      0.0%     
+ flops    27 x    27 x    39             18252702     100.0%      0.0%      0.0%     
+ flops    32 x    14 x    32             18579456     100.0%      0.0%      0.0%     
+ flops    27 x    13 x    13             20423988     100.0%      0.0%      0.0%     
+ flops    27 x    27 x    13             31387824     100.0%      0.0%      0.0%     
+ flops    32 x    13 x    27             42075072     100.0%      0.0%      0.0%     
+ flops    27 x    13 x    32             42075072     100.0%      0.0%      0.0%     
+ flops    32 x    27 x    39             43535232     100.0%      0.0%      0.0%     
+ flops    27 x    32 x    39             43535232     100.0%      0.0%      0.0%     
+ flops    32 x    13 x    13             48412416     100.0%      0.0%      0.0%     
+ flops    32 x    27 x    13             74400768     100.0%      0.0%      0.0%     
+ flops    27 x    32 x    13             74400768     100.0%      0.0%      0.0%     
+ flops    32 x    13 x    32            100958208     100.0%      0.0%      0.0%     
+ flops    32 x    32 x    39            103434240     100.0%      0.0%      0.0%     
+ flops    32 x    32 x    13            176357376     100.0%      0.0%      0.0%     
+ flops inhomo. stacks                           0       0.0%      0.0%      0.0%
+ flops total                       979.337340E+06     100.0%      0.0%      0.0%
+ flops max/rank                    979.337340E+06     100.0%      0.0%      0.0%
+ matmuls inhomo. stacks                         0       0.0%      0.0%      0.0%
+ matmuls total                              47820     100.0%      0.0%      0.0%
+ number of processed stacks                 10903     100.0%      0.0%      0.0%
+ average stack size                                     4.4       0.0       0.0
+ marketing flops                     1.637407E+09
+ -------------------------------------------------------------------------------
+ # multiplications                           3265
+ max memory usage/rank              32.768889E+09
+ # max total images/rank                        1
+ # max 3D layers                                1
+ # MPI messages exchanged                       0
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                      DBCSR MESSAGE PASSING PERFORMANCE                      -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ ROUTINE             CALLS      AVE VOLUME [Bytes]
+ MP_Bcast               67                     12.
+ MP_Allreduce        15530                      9.
+ MP_Alltoall         12398                   1313.
+ MP_ISend            12690                    113.
+ MP_IRecv            12690                    113.
+ -------------------------------------------------------------------------------
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                GRID STATISTICS                              -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ LP    KERNEL             BACKEND                              COUNT     PERCENT
+ 4     collocate ortho    CPU                                  26924      50.00%
+ 4     integrate ortho    CPU                                  26924      50.00%
+ 0     collocate general  CPU                                      3       0.01%
+ -------------------------------------------------------------------------------
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                          OFFLOAD MEMPOOL STATISTICS                         -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ Memory consumption                Number of allocations  Used [MiB]  Size [MiB]
+ Host                                                  6         260    22290579
+ -------------------------------------------------------------------------------
+
+ MEMORY| Estimated peak process memory [MiB]                               11899
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                         MESSAGE PASSING PERFORMANCE                         -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+
+ ROUTINE             CALLS      AVE VOLUME [Bytes]
+ MP_Group                5
+ MP_Bcast             2660                   1111.
+ MP_Allreduce        10084                    282.
+ MP_Sync               142
+ MP_comm_split         142
+ -------------------------------------------------------------------------------
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                           R E F E R E N C E S                               -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ 
+ CP2K version 2026.2 (Development Version), the CP2K developers group (2026).
+ CP2K is freely available from https://www.cp2k.org/ .
+ 
+ M. Iannuzzi, J. Wilhelm, F. Stein, A. Bussy, H. Elgabarty, D. Golze, A. Hehn, 
+ M. Graml, S. Marek, B. Sertcan Gökmen, C. Schran, H. Forbert, R. Z. 
+ Khaliullin, A. Kozhevnikov, M. Taillefumier, R. Meli, V. V. Rybkin, M. Brehm, 
+ R. Schade, O. Schütt, J. V. Pototschnig, H. Mirhosseini, A. Knüpfer, D. Marx, 
+ M. Krack, J. Hutter, T. D. Kühne.
+ J. Phys. Chem. B 130, 1237-1310 (2026).
+ The CP2K Program Package Made Simple.
+ https://doi.org/10.1021/acs.jpcb.5c05851
+
+ M. Graml, K. Zollner, D. Hernangómez-Pérez, P. E. Faria Junior, J. Wilhelm.
+ J. Chem. Theory Comput. 20, 2202-2208 (2024).
+ Low-scaling GW algorithm applied to twisted transition-metal dichalcogenide 
+ heterobilayers.
+ https://doi.org/10.1021/acs.jctc.3c01230
+
+ T. D. Kühne, M. Iannuzzi, M. Del Ben, V. V. Rybkin, P. Seewald, F. Stein, T. 
+ Laino, R. Z. Khaliullin, O. Schütt, F. Schiffmann, D. Golze, J. Wilhelm, S. 
+ Chulkov, M. H. Bani-Hashemian, V. Weber, U. Borstnik, M. Taillefumier, A. S. 
+ Jakobovits, A. Lazzaro, H. Pabst, T. Müller, R. Schade, M. Guidon, S. 
+ Andermatt, N. Holmberg, G. K. Schenter, A. Hehn, A. Bussy, F. Belleflamme, G. 
+ Tabacchi, A. Glöß, M. Lass, I. Bethune, C. J. Mundy, C. Plessl, M. Watkins, 
+ J. VandeVondele, M. Krack, J. Hutter.
+ J. Chem. Phys. 152, 194103 (2020).
+ CP2K: An electronic structure and molecular dynamics software package - 
+ Quickstep: Efficient and accurate electronic structure calculations.
+ https://doi.org/10.1063/5.0007045
+
+ O. Schuett, P. Messmer, J. Hutter, J. VandeVondele.
+ Electronic Structure Calculations on Graphics Processing Units, 173-190 (2016).
+ GPU-Accelerated Sparse Matrix-Matrix Multiplication for Linear Scaling Density 
+ Functional Theory.
+ https://doi.org/10.1002/9781118670712.ch8
+
+ A. Heinecke, G. Henry, M. Hutchinson, H. Pabst.
+ Proceedings of Intl. Supercomputing Conference, 981-991 (2016).
+ LIBXSMM: Accelerating Small Matrix Multiplications by Runtime Code Generation.
+ https://doi.org/10.1109/SC.2016.83
+
+ U. Borstnik, J. VandeVondele, V. Weber, J. Hutter.
+ Parallel Comput. 40, 47-58 (2014).
+ Sparse matrix multiplication: The distributed block-compressed sparse row 
+ library.
+ https://doi.org/10.1016/j.parco.2014.03.012
+
+ J. VandeVondele, J. Hutter.
+ J. Chem. Phys. 127, 114105 (2007).
+ Gaussian basis sets for accurate calculations on molecular systems in gas and 
+ condensed phases.
+ https://doi.org/10.1063/1.2770708
+
+ J. VandeVondele, M. Krack, F. Mohamed, M. Parrinello, T. Chassaing, J. Hutter.
+ Comput. Phys. Commun. 167, 103-128 (2005).
+ QUICKSTEP: Fast and accurate density functional calculations using a mixed 
+ Gaussian and plane waves approach.
+ https://doi.org/10.1016/j.cpc.2004.12.014
+
+ M. Krack.
+ Theor. Chem. Acc. 114, 145-152 (2005).
+ Pseudopotentials for H to Kr optimized for gradient-corrected 
+ exchange-correlation functionals.
+ https://doi.org/10.1007/s00214-005-0655-y
+
+ M. Frigo, S. G. Johnson.
+ Proc. IEEE 93, 216-231 (2005).
+ The design and implementation of FFTW3.
+ https://doi.org/10.1109/JPROC.2004.840301
+
+ J. VandeVondele, J. Hutter.
+ J. Chem. Phys. 118, 4365-4369 (2003).
+ An efficient orbital transformation method for electronic structure 
+ calculations.
+ https://doi.org/10.1063/1.1543154
+
+ C. Hartwigsen, S. Goedecker, J. Hutter.
+ Phys. Rev. B 58, 3641-3662 (1998).
+ Relativistic separable dual-space Gaussian pseudopotentials from H to Rn.
+ https://doi.org/10.1103/PhysRevB.58.3641
+
+ G. Lippert, J. Hutter, M. Parrinello.
+ Mol. Phys. 92, 477-487 (1997).
+ A hybrid Gaussian and plane wave density functional scheme.
+ https://doi.org/10.1080/002689797170220
+
+ S. Goedecker, M. Teter, J. Hutter.
+ Phys. Rev. B 54, 1703-1710 (1996).
+ Separable dual-space Gaussian pseudopotentials.
+ https://doi.org/10.1103/PhysRevB.54.1703
+
+ J. P. Perdew, K. Burke, M. Ernzerhof.
+ Phys. Rev. Lett. 77, 3865-3868 (1996).
+ Generalized gradient approximation made simple.
+ https://doi.org/10.1103/PhysRevLett.77.3865
+
+ P. E. Blöchl.
+ J. Chem. Phys. 103, 7422-7428 (1995).
+ Electrostatic decoupling of periodic images of plane‐wave‐expanded 
+ densities and derived atomic point charges.
+ https://doi.org/10.1063/1.470314
+
+ R. H. Byrd, P. H. Lu, J. Nocedal, C. Y. Zhu.
+ SIAM J. Sci. Comput. 16, 1190-1208 (1995).
+ A Limited Memory Algorithm for Bound Constrained Optimization.
+ https://doi.org/10.1137/0916069
+
+
+ -------------------------------------------------------------------------------
+ -                                                                             -
+ -                                T I M I N G                                  -
+ -                                                                             -
+ -------------------------------------------------------------------------------
+ SUBROUTINE                       CALLS  ASD         SELF TIME        TOTAL TIME MAXRANK
+                                MAXIMUM       AVERAGE  MAXIMUM  AVERAGE  MAXIMUM
+ CP2K                                 1  1.0    0.055    0.055  883.816  883.816       0
+ qs_energies                          1  2.0    0.027    0.027  877.032  877.032       0
+ scf_env_do_scf                       1  3.0    0.014    0.014  863.924  863.924       0
+ scf_env_do_scf_inner_loop          126  4.0    0.061    0.061  858.298  858.298       0
+ qs_ks_build_kohn_sham_matrix       127  7.0    0.401    0.401  678.580  678.580       0
+ qs_ks_update_qs_env                127  5.0    0.003    0.003  676.941  676.941       0
+ rebuild_ks_matrix                  126  6.0    0.000    0.000  676.928  676.928       0
+ fft_wrap_pw1pw2                   2153 10.3    0.052    0.052  529.835  529.835       0
+ fft_wrap_pw1pw2_300               1391 11.8   25.394   25.394  511.545  511.545       0
+ qs_vxc_create                      127  8.0    0.009    0.009  465.920  465.920       0
+ xc_vxc_pw_create                   126  9.0   18.825   18.825  465.911  465.911       0
+ xc_pw_derive                       756 11.0    0.007    0.007  336.324  336.324       0
+ fft3d_s                           2154 12.3  313.735  313.735  313.756  313.756       0
+ xc_pw_divergence                   126 10.0    0.003    0.003  227.962  227.962       0
+ xc_rho_set_and_dset_create         126 10.0   10.274   10.274  212.944  212.944       0
+ qs_rho_update_rho_low              127  5.0    0.001    0.001  186.183  186.183       0
+ calculate_rho_elec                 127  6.0   12.732   12.732  186.182  186.182       0
+ density_rs2pw                      127  7.0    0.007    0.007  114.099  114.099       0
+ pw_scatter_s                      1139 12.8  100.385  100.385  100.385  100.385       0
+ qs_ks_ddapc                        127  8.0    0.006    0.006   70.198   70.198       0
+ pw_derive                         1137 11.3   67.375   67.375   67.375   67.375       0
+ sum_up_and_integrate               127  8.0    0.004    0.004   66.998   66.998       0
+ pw_poisson_solve                   127  8.0    0.019    0.019   66.734   66.734       0
+ integrate_v_rspace                 127  9.0    0.022    0.022   63.678   63.678       0
+ potential_pw2rs                    127 10.0    0.447    0.447   63.201   63.201       0
+ grid_collocate_task_list           127  7.0   59.352   59.352   59.352   59.352       0
+ pw_gather_s                       1014 11.9   52.680   52.680   52.680   52.680       0
+ pw_copy                           2028 10.6   49.744   49.744   49.744   49.744       0
+ pw_integral_ab_c1d_c1d_gs          254  9.5   37.407   37.407   37.407   37.407       0
+ pw_poisson_set                     128  9.0    0.013    0.013   35.341   35.341       0
+ pw_axpy                           1275  9.2   27.803   27.803   27.803   27.803       0
+ xc_functional_eval                 126 11.0    0.010    0.010   25.142   25.142       0
+ pbe_lda_eval                       126 12.0   25.132   25.132   25.132   25.132       0
+ cp_ddapc_apply_CD                  127  9.0    0.038    0.038   23.420   23.420       0
+ pw_copy_to_array                  1014 11.9   18.423   18.423   18.423   18.423       0
+ pw_copy_from_array                1139 12.8   17.850   17.850   17.850   17.850       0
+ fft_wrap_pw1pw2_100                254 10.5    1.169    1.169   16.654   16.654       0
+ qs_energies_properties               1  3.0    0.001    0.001   10.496   10.496       0
+ post_scf_bandstructure               1  4.0    0.001    0.001   10.495   10.495       0
+ run_gw                               1  5.0    0.001    0.001   10.429   10.429       0
+ pw_zero                            650 10.2    9.624    9.624    9.624    9.624       0
+ gw_calc_ri_rs_non_periodic           1  6.0    0.004    0.004    7.490    7.490       0
+ optimize_ri_rs_grid                  1  7.0    0.001    0.001    7.029    7.029       0
+ rirs_grid_LBFGS                      1  8.0    0.258    0.258    6.678    6.678       0
+ qs_init_subsys                       1  2.0    0.026    0.026    6.504    6.504       0
+ qs_env_setup                         1  3.0    0.003    0.003    6.465    6.465       0
+ qs_env_rebuild_pw_env                2  3.5    0.001    0.001    6.455    6.455       0
+ pw_env_rebuild                       1  5.0    0.006    0.006    6.455    6.455       0
+ pw_grid_setup                        5  5.2    0.000    0.000    6.445    6.445       0
+ pw_grid_setup_internal               5  6.2    0.082    0.082    6.445    6.445       0
+ evaluate_rirs_grid_cluster         903  9.0    1.162    1.162    6.419    6.419       0
+ pw_grid_sort                         5  7.2    4.700    4.700    6.067    6.067       0
+ init_scf_loop                        1  4.0    0.010    0.010    5.612    5.612       0
+ pw_scale                           505  9.8    5.401    5.401    5.401    5.401       0
+ get_ddapc                          127 10.0    0.012    0.012    4.442    4.442       0
+ pw_multiply_with                   127  9.0    4.174    4.174    4.174    4.174       0
+ create_and_init_bs_env_for_gw        1  6.0    0.042    0.042    2.938    2.938       0
+ transfer_rs2pw                     509  8.0    0.009    0.009    2.784    2.784       0
+ transfer_pw2rs                     508 11.0    0.005    0.005    2.761    2.761       0
+ rirs_cluster_gradient_coordina     903 10.0    2.293    2.293    2.293    2.293       0
+ transfer_rs2pw_300                 128  9.0    2.192    2.192    2.192    2.192       0
+ transfer_pw2rs_300                 127 12.0    2.167    2.167    2.167    2.167       0
+ qs_scf_new_mos                     126  5.0    0.001    0.001    2.119    2.119       0
+ qs_scf_loop_do_ot                  126  6.0    0.002    0.002    2.119    2.119       0
+ ot_scf_mini                        126  7.0    0.047    0.047    2.060    2.060       0
+ xc_pw_smooth                       126 10.0    0.000    0.000    2.013    2.013       0
+ init_scf_run                         1  3.0    0.009    0.009    1.804    1.804       0
+ scf_env_initial_rho_setup            1  4.0    0.001    0.001    1.794    1.794       0
+ compute_V_xc                         1  7.0    0.006    0.006    1.659    1.659       0
+ sort_shells                          5  8.2    1.367    1.367    1.367    1.367       0
+ fft_wrap_pw1pw2_40                 254 10.5    0.100    0.100    1.280    1.280       0
+ ot_mini                            126  8.0    0.005    0.005    1.104    1.104       0
+ rirs_cluster_gradient_products     903 10.0    0.935    0.935    0.935    0.935       0
+ qs_ot_get_derivative               126  9.0    0.171    0.171    0.910    0.910       0
+ -------------------------------------------------------------------------------
+
+ The number of warnings for this run is : 0
+ 
+ -------------------------------------------------------------------------------
+  **** **** ******  **  PROGRAM ENDED AT                 2026-09-18 13:34:28.625
+ ***** ** ***  *** **   PROGRAM RAN ON                                  n2cn1036
+ **    ****   ******    PROGRAM RAN BY                                  eprop2d1
+ ***** **    ** ** **   PROGRAM PROCESS ID                                343279
+  **** **  *******  **  PROGRAM STOPPED IN /scratch/hpc-prf-metdyn/eprop2d1_Jan/
+                                           53_benchmark_RI_opt/139_Figure3_alpha
+                                           1_1p5_coopfst/calculations/83_SO2_rc3
+                                           _a1
