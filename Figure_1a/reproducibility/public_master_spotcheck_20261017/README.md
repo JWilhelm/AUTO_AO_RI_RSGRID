@@ -15,3 +15,5 @@ Thus the adapted inputs run with public `master`, but numerical equality cannot 
 Figure 4a denotes the 0.5 Å atomic-cluster radius. For monatomic He this radius does not change cluster membership. The historical outputs used 37 MPI ranks and 16–32 OpenMP threads; the new runs used one MPI rank and eight OpenMP threads. The comparison establishes the result of running the adapted inputs in this public-master configuration; it does not isolate which code or parallel-layout change caused each numerical difference. Only five of the 68,500 figure `input.inp` files were run again.
 
 New CP2K output and orbital table pairs are under `cases/`. The complete historical raw files are next to the linked figure inputs. The original input bytes are available at repository commit `768b14d59d5870e92a01ca9bcd544a9e3a9af84f`.
+
+A [separate He HOMO diagnostic](../public_master_he_homo_diagnostics_20261017/README.md) tests the GW analytic-continuation fit window, minimax regularization, and supported minimax point counts against this public-master baseline.
